@@ -11,19 +11,64 @@ const int WINDOW_HEIGHT = 1080;
 const int WINDOW_WIDTH = 1920;
 RenderWindow window(VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "3D Engine");
 
-
-
-std::vector<int*> ints;
+extern vector<triangle> to_draw;
 
 
 TextClass*  x_val_ptr = nullptr;
 TextClass* y_val_ptr = nullptr;
 TextClass* z_val_ptr = nullptr;
 
+bool PointInTriangle(Vector2f A, Vector2f B, Vector2f C, Vector2i P)
+{
+    float dAB = (B.x - A.x) * (P.y - A.y) - (B.y - A.y) * (P.x - A.x);
+    float dBC = (C.x - B.x) * (P.y - B.y) - (C.y - B.y) * (P.x - B.x);
+    float dCA = (A.x - C.x) * (P.y - C.y) - (A.y - C.y) * (P.x - C.x);
+
+    bool hasNeg = (dAB < 0) || (dBC < 0) || (dCA < 0);
+    bool hasPos = (dAB > 0) || (dBC > 0) || (dCA > 0);
+
+    return !(hasNeg && hasPos);
+}
+
 void Main_MousePress()
 {
-    cout << "Obj\n";
     //Обнаружение объекта в пределах курсора в Project1
+    cout << "Obj\n";
+    mesh* toDelete = {};
+    for (auto& T : to_draw)
+    {
+        if (PointInTriangle(
+            Vector2f(float((T.p[0].x + 1) * window.getSize().x / 2), float((T.p[0].y + 1) * window.getSize().y / 2)),
+            Vector2f(float((T.p[1].x + 1) * window.getSize().x / 2), float((T.p[1].y + 1) * window.getSize().y / 2)),
+            Vector2f(float((T.p[2].x + 1) * window.getSize().x / 2), float((T.p[2].y + 1) * window.getSize().y / 2)),
+            sf::Mouse::getPosition(window)))
+        {
+            cout << "Triangle selected!\n";
+            if (T.owner)
+            {
+                toDelete = T.owner;
+                cout << "Deel" << endl;
+            }
+            else
+            {
+                cout << "No dell" << endl;
+            }
+        }
+        else
+        {
+            cout << "No triangle!\n";
+        }
+
+    }
+    if (toDelete)
+    {
+        auto it = std::find(mesh::meshes.begin(), mesh::meshes.end(), toDelete);
+        if (it != mesh::meshes.end())
+        {
+            delete* it;
+            mesh::meshes.erase(it);
+        }
+    }
 }
 
 bool String_is_Int(sf::String str)
@@ -65,25 +110,6 @@ float dot(const sf::Vector2f& a, const sf::Vector2f& b)
     return a.x * b.x + a.y * b.y;
 }
 
-bool pointInTriangle(Vector2f A, Vector2f B, Vector2f C, Vector2f P)    //https://chatgpt.com/s/t_694f04d914e881918992006e1ef7d8b7  (dot - скалярное произведение векторов: x1*x2+y1*y2)
-{
-    Vector2f v0 = C - A;
-    Vector2f v1 = B - A;
-    Vector2f v2 = P - A;
-
-    float dot00 = dot(v0, v0);
-    float dot01 = dot(v0, v1);
-    float dot02 = dot(v0, v2);
-    float dot11 = dot(v1, v1);
-    float dot12 = dot(v1, v2);
-
-    float invDenom = 1.0f / (dot00 * dot11 - dot01 * dot01);
-
-    float u = (dot11 * dot02 - dot01 * dot12) * invDenom;
-    float v = (dot00 * dot12 - dot01 * dot02) * invDenom;
-
-    return (u >= 0) && (v >= 0) && (u + v <= 1);
-}
 
 void OBJMove(Vector3i forw, sf::String str) { if (String_is_Int(str)) { cout << "Move" << endl; } }
 

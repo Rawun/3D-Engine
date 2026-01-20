@@ -10,9 +10,9 @@
 #include "main.hpp"
 
 std::vector<mesh*> mesh::meshes = {};
+vector<triangle> to_draw = {};
 
-//h
-std::vector<Vector2f> wDraw;
+
 
 using namespace std;
 using namespace sf;
@@ -57,7 +57,6 @@ Vector2i mouse_offset;
 void OBJ_START(RenderWindow& window, const int WINDOW_WIDTH, const int WINDOW_HEIGHT)
 {
     light_dir.norm();
-
     window.setVerticalSyncEnabled(true);
     Mouse::setPosition(Vector2i(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2), window);
     window.setMouseCursorVisible(false);
@@ -117,12 +116,13 @@ int OBJ_render(RenderWindow& window, const int WINDOW_WIDTH, const int WINDOW_HE
                         editing_textClass->TextEntering(event.text.unicode);
                 }
                 else allow_movement = true;
+                break;
 
             case Event::MouseButtonPressed:
-                if (event.key.code == Mouse::Left) if(UI_MousePressed()) Main_MousePress();
+                if (event.mouseButton.button == Mouse::Left) if(UI_MousePressed()) Main_MousePress();
                 break;
             case Event::MouseButtonReleased:
-                if (event.key.code == Mouse::Left) MouseReleased();
+                if (event.mouseButton.button == Mouse::Left) MouseReleased();
                 break;
             case Event::MouseMoved:
                 MouseMove(window);
@@ -176,7 +176,7 @@ int OBJ_render(RenderWindow& window, const int WINDOW_WIDTH, const int WINDOW_HE
         mat4x4 view_mat = mat4x4::get_point_at_mat(camera_loc, target, up_dir);
         view_mat.invert();
 
-        vector<triangle> to_draw;
+        to_draw = {};
         for (auto ms : mesh::meshes)
         {
             for (auto t : ms->tris)
@@ -241,24 +241,28 @@ int OBJ_render(RenderWindow& window, const int WINDOW_WIDTH, const int WINDOW_HE
                 float z2 = (t2.p[0].z + t2.p[1].z + t2.p[2].z) / 3.0f;
                 return z1 > z2;
             });
-        wDraw.clear();
         for (auto T : to_draw)
         {
             if (outline_only)
             {
                 sf::VertexArray outline(sf::LinesStrip, 4);
 
-                for (int j = 0; j < 4; j++)
+                for (int j = 0; j < 3; j++)
                 {
                     float x = (T.p[j % 3].x + 1) * window.getSize().x / 2;
                     float y = (T.p[j % 3].y + 1) * window.getSize().y / 2;
                     outline[j].color = sf::Color::Black;
                     outline[j].position = sf::Vector2f(x, y);
                     //h
-                    wDraw.push_back(Vector2f(x, y));
+                    //screenTrianD.push_back(Vector2f(x, y));
                 }
 
-                window.draw(outline);
+                float x = (T.p[3 % 3].x + 1) * window.getSize().x / 2;
+                float y = (T.p[3 % 3].y + 1) * window.getSize().y / 2;
+                outline[3].color = sf::Color::Black;
+                outline[3].position = sf::Vector2f(x, y);
+
+                window.draw(outline);       //только линии
             }
             else
             {
@@ -273,6 +277,8 @@ int OBJ_render(RenderWindow& window, const int WINDOW_WIDTH, const int WINDOW_HE
                     int G = 249 * (0.3 + 0.7 * max(0.0f, dot_prod(-T.normal, light_dir)));
                     int B = 142 * (0.3 + 0.7 * max(0.0f, dot_prod(-T.normal, light_dir)));
                     tri[j].color = Color(R, G, B);
+
+
                 }
 
                 window.draw(tri);

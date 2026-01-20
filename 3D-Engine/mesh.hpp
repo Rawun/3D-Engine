@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 // Made by Mimocake in 2024
 // Used tutorials of javidx9: https://www.youtube.com/watch?v=ih20l3pJoeU
 
@@ -8,13 +8,18 @@
 #include <strstream>
 #include "mathematics.hpp"
 
+
 struct triangle
 {
+    class mesh* owner = nullptr;
+
     std::vector<vec3> p;
     vec3 normal;
     triangle() { p = std::vector<vec3>(3); }
     triangle(std::vector<vec3> P) { p = P; }
     triangle(vec3 p1, vec3 p2, vec3 p3) { p = std::vector<vec3>(3); p[0] = p1; p[1] = p2; p[2] = p3; };
+    triangle(const triangle& other)
+        : owner(other.owner), p(other.p), normal(other.normal) {}
     std::vector<triangle> clip_fun(vec3 plane_p, vec3 plane_n)
     {
         plane_n.norm();
@@ -84,7 +89,7 @@ public:
     std::vector<triangle> tris;
     vec3 offset;
     mesh(vec3 offset) : offset(offset) { tris = {}; meshes.push_back(this); }
-    mesh(vec3 offset, std::vector<triangle>& TRIS) : offset(offset), tris(TRIS) 
+    mesh(vec3 offset, std::vector<triangle>& TRIS) : offset(offset), tris(TRIS)
     { 
         meshes.push_back(this); 
         
@@ -94,6 +99,11 @@ public:
             {
                 tr.p[i] = tr.p[i] + offset;
             }
+        }
+
+        for (auto& t : tris)
+        {
+            t.owner = this;  // ← ВАЖНО
         }
     }
 
@@ -127,6 +137,10 @@ public:
             {
                 this->tris[i].p[j] = this->tris[i].p[j] + offset;
             }
+        }
+        for (auto& t : tris)
+        {
+            t.owner = this;  // ← ВАЖНО
         }
     }
 };
