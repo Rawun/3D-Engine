@@ -13,12 +13,12 @@ struct triangle
 {
     class mesh* owner = nullptr;
 
-    std::vector<vec3> p;
+    std::vector<vec3> p;    // Точки треугольника
     vec3 normal;
-    triangle() { p = std::vector<vec3>(3); }
-    triangle(std::vector<vec3> P) { p = P; }
-    triangle(vec3 p1, vec3 p2, vec3 p3) { p = std::vector<vec3>(3); p[0] = p1; p[1] = p2; p[2] = p3; };
-    triangle(const triangle& other)
+    triangle() { p = std::vector<vec3>(3); }    // Создание треугольника с точками (0, 0, 0), (0, 0, 0), (0, 0, 0)
+    triangle(std::vector<vec3> P) { p = P; }    // Создание треугольника с заданным массивом точек
+    triangle(vec3 p1, vec3 p2, vec3 p3) { p = std::vector<vec3>(3); p[0] = p1; p[1] = p2; p[2] = p3; };     // Создание треугольника с заданными точками
+    triangle(const triangle& other)     // Конструктор копирования
         : owner(other.owner), p(other.p), normal(other.normal) {}
     std::vector<triangle> clip_fun(vec3 plane_p, vec3 plane_n)
     {
@@ -88,11 +88,11 @@ struct triangle
 class mesh
 {
 public:
-    static std::vector<mesh*> meshes;
+    static std::vector<mesh*> meshes;   // Массив указателей на мешы
     std::vector<triangle> tris;
-    vec3 offset;
-    mesh(vec3 offset) : offset(offset) { tris = {}; meshes.push_back(this); }
-    mesh(vec3 offset, std::vector<triangle>& TRIS) : offset(offset), tris(TRIS)
+    vec3 offset;    // Смещение относительно всех треугольников
+    mesh(vec3 offset) : offset(offset) { tris = {}; meshes.push_back(this); }   // Создание пустого меша
+    mesh(vec3 offset, std::vector<triangle>& TRIS) : offset(offset), tris(TRIS)     // Создание меша с готовыми полигонами
     { 
         meshes.push_back(this); 
         
@@ -106,7 +106,7 @@ public:
 
         for (auto& t : tris)
         {
-            t.owner = this;  // ← ВАЖНО
+            t.owner = this;     // Задавание каждому треугольнику владельца "mesh"
         }
     }
 
@@ -143,7 +143,7 @@ public:
         }
         for (auto& t : tris)
         {
-            t.owner = this;
+            t.owner = this;     // Задавание каждому треугольнику владельца "mesh"
         }
     }
 };
