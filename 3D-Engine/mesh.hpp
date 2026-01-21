@@ -52,6 +52,7 @@ struct triangle
         {
             float t;
             triangle out;
+            out.owner = this->owner;
             out.p[0] = inside[0];
 
             out.p[1] = intersectPlane(plane_p, plane_n, inside[0], outside[0], t);
@@ -65,6 +66,8 @@ struct triangle
         if (inside_count == 2 && outside_count == 1)
         {
             triangle out1, out2;
+            out1.owner = this->owner;
+            out2.owner = this->owner;
             float t;
 
             out1.p[0] = inside[0];
@@ -140,7 +143,7 @@ public:
         }
         for (auto& t : tris)
         {
-            t.owner = this;  // ← ВАЖНО
+            t.owner = this;
         }
     }
 };

@@ -13,8 +13,9 @@ RenderWindow window(VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "3D Engine");
 
 extern vector<triangle> to_draw;
 
+mesh* SelectedMesh;
 
-TextClass*  x_val_ptr = nullptr;
+TextClass* x_val_ptr = nullptr;
 TextClass* y_val_ptr = nullptr;
 TextClass* z_val_ptr = nullptr;
 
@@ -33,8 +34,9 @@ bool PointInTriangle(Vector2f A, Vector2f B, Vector2f C, Vector2i P)
 void Main_MousePress()
 {
     //Обнаружение объекта в пределах курсора в Project1
-    cout << "Obj\n";
     mesh* toDelete = {};
+    SelectedMesh == nullptr;
+
     for (auto& T : to_draw)
     {
         if (PointInTriangle(
@@ -43,30 +45,8 @@ void Main_MousePress()
             Vector2f(float((T.p[2].x + 1) * window.getSize().x / 2), float((T.p[2].y + 1) * window.getSize().y / 2)),
             sf::Mouse::getPosition(window)))
         {
-            cout << "Triangle selected!\n";
-            if (T.owner)
-            {
-                toDelete = T.owner;
-                cout << "Deel" << endl;
-            }
-            else
-            {
-                cout << "No dell" << endl;
-            }
-        }
-        else
-        {
-            cout << "No triangle!\n";
-        }
-
-    }
-    if (toDelete)
-    {
-        auto it = std::find(mesh::meshes.begin(), mesh::meshes.end(), toDelete);
-        if (it != mesh::meshes.end())
-        {
-            delete* it;
-            mesh::meshes.erase(it);
+            SelectedMesh = T.owner;
+            cout << T.owner << endl;
         }
     }
 }
@@ -118,33 +98,28 @@ void CreateObject()
     if (String_is_Int(x_val_ptr->drawing_text) && String_is_Int(y_val_ptr->drawing_text) && String_is_Int(z_val_ptr->drawing_text))
     {
         new mesh(vec3(
-                std::stod(x_val_ptr->drawing_text.toAnsiString()),
-                std::stod(y_val_ptr->drawing_text.toAnsiString()),
-                std::stod(z_val_ptr->drawing_text.toAnsiString())
+            std::stod(x_val_ptr->drawing_text.toAnsiString()),
+            std::stod(y_val_ptr->drawing_text.toAnsiString()),
+            std::stod(z_val_ptr->drawing_text.toAnsiString())
         ));
         mesh::meshes.back()->define_as_cube();
     }
-    cout << "Create;" << endl;
 }
 
-
-void TestMove()
-{
-    cout << "Test:" << endl;
-    for (auto i : mesh::meshes)
-    {
-        cout << 1 << endl;
-    }
-    cout << "Test end;" << endl;
-}
 
 void DeleteObject()
 {
-    //cout << mesh::meshes[0]->tris[0].p[0].x << mesh::meshes[0]->tris[0].p[0].y << mesh::meshes[0]->tris[0].p[0].z << endl;
-    //if(mesh::meshes[0] != nullptr) delete mesh::meshes[0];
+    if (SelectedMesh)
+    {
+        auto it = std::find(mesh::meshes.begin(), mesh::meshes.end(), SelectedMesh);
+        if (it != mesh::meshes.end())
+        {
+            delete* it;
+            mesh::meshes.erase(it);
+        }
+    }
+    SelectedMesh = nullptr;
     cout << "Delete" << endl;
-    if (!mesh::meshes.empty())
-        mesh::meshes.erase(mesh::meshes.begin());
 }
 
 
@@ -154,18 +129,15 @@ int main()
     UI_START();
 
 
+
     Area* areaSh_ptr = new Area(Vector2f(220, 510), Vector2f(5, 5), Vector2f(0, 0), Color(0, 0, 0), Color(128, 128, 128));
     Area::areaArray.push_back(areaSh_ptr);
 
     Button CreateOBJ(Vector2f(200, 50), Vector2f(5, 5), Color(0, 100, 0), *areaSh_ptr,
         []() { CreateObject(); },
         sf::String(L"Создать объект"), 25, Color::Black
-        );
-
-    Button TestMoveB(Vector2f(200, 50), Vector2f(5, 75), Color(0, 0, 100), *areaSh_ptr,
-        []() { TestMove(); },
-        sf::String(L"Test Move"), 25, Color::Black
     );
+
 
     Button DeleteOBJ(Vector2f(200, 50), Vector2f(5, 145), Color(100, 0, 0), *areaSh_ptr,
         []() { DeleteObject(); },

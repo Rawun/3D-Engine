@@ -182,6 +182,7 @@ int OBJ_render(RenderWindow& window, const int WINDOW_WIDTH, const int WINDOW_HE
             for (auto t : ms->tris)
             {
                 triangle new_tri, proj;
+                new_tri.owner = t.owner;
                 for (int k = 0; k < 3; k++)
                 {
                     new_tri.p[k] = t.p[k] * mat4x4::get_rot_y(theta * 1.5);
