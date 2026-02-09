@@ -10,7 +10,7 @@
 #include "main.hpp"
 
 std::vector<mesh*> mesh::meshes = {};
-vector<triangle> to_draw = {};
+vector<triangle> to_draw;
 
 
 
@@ -29,7 +29,7 @@ int TrisCount()
 }
 
 
-vec3 camera_loc(0, -2.0, -5);
+vec3 camera_loc(-1, -1, -4);
 mat4x4 proj_mat = mat4x4::get_proj_mat(1920, 1080, 0.1, 1000, 90);
 
 
