@@ -1,4 +1,4 @@
-//PC
+//Laptop
 
 #include <SFML/Graphics.hpp>
 #include <algorithm>
