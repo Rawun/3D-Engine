@@ -425,7 +425,6 @@ public:
 //=============================================================================================
 vector<Area*> Area::areaArray;
 
-bool mouse_keys[3] = { 0, 0, 0 };
 int frame = 0;
 bool cursor_visible = true;
 
@@ -454,7 +453,6 @@ bool UI_MousePressed()
             editing_textClass->DoneEditing(*editing_textClass);
         editing_textClass = nullptr;
     }
-    mouse_keys[0] = true;
     if(!aimed.empty())
     {
         for (auto am : aimed)
@@ -464,8 +462,6 @@ bool UI_MousePressed()
 }
 void MouseReleased() 
 {
-    mouse_keys[0] = false;
-
     for (auto on_pr : on_pressed)
         on_pr->Released();
 }

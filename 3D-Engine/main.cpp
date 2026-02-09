@@ -34,7 +34,6 @@ bool PointInTriangle(Vector2f A, Vector2f B, Vector2f C, Vector2i P)
 void Main_MousePress()
 {
     //Обнаружение объекта в пределах курсора в Project1
-    mesh* toDelete = {};
     SelectedMesh == nullptr;
 
     for (auto& T : to_draw)
@@ -67,9 +66,9 @@ bool String_is_Int(sf::String str)
         {
             if (i != 0) return false; // '-' только в начале
         }
-        else if (c == '.')
+        else if (c == '.' || c == ',')
         {
-            if (hasDot) return false; // только одна точка
+            if (hasDot) return false; // только одна точка или запятая
             hasDot = true;
         }
         else if (isdigit(c))
@@ -85,23 +84,31 @@ bool String_is_Int(sf::String str)
     return hasDigit; // обязательно хотя бы одна цифра
 }
 
-float dot(const sf::Vector2f& a, const sf::Vector2f& b)
+float dot(const sf::Vector2f& a, const sf::Vector2f& b)     // Скалярное произведение 2D векторов
 {
     return a.x * b.x + a.y * b.y;
 }
 
 
-void OBJMove(Vector3i forw, sf::String str) { if (String_is_Int(str)) { cout << "Move" << endl; } }
 
 void CreateObject()
 {
     if (String_is_Int(x_val_ptr->drawing_text) && String_is_Int(y_val_ptr->drawing_text) && String_is_Int(z_val_ptr->drawing_text))
     {
+        std::replace(x_val_ptr->drawing_text.begin(), x_val_ptr->drawing_text.end(), '.', ',');
+        std::replace(y_val_ptr->drawing_text.begin(), y_val_ptr->drawing_text.end(), '.', ',');
+        std::replace(z_val_ptr->drawing_text.begin(), z_val_ptr->drawing_text.end(), '.', ',');
+
         new mesh(vec3(
             std::stod(x_val_ptr->drawing_text.toAnsiString()),
             std::stod(y_val_ptr->drawing_text.toAnsiString()),
             std::stod(z_val_ptr->drawing_text.toAnsiString())
         ));
+        cout << "Create: x:" << std::stod(x_val_ptr->drawing_text.toAnsiString()) <<
+            ", y:" << std::stod(y_val_ptr->drawing_text.toAnsiString()) <<
+            ", z:" << std::stod(z_val_ptr->drawing_text.toAnsiString())<<endl;
+
+        cout << "RawX:" << std::stod("0,5") << endl;
         mesh::meshes.back()->define_as_cube();
     }
 }
@@ -123,11 +130,13 @@ void DeleteObject()
 }
 
 
+void NullFunction() {};
+
+
 int main()
 {
     OBJ_START(window, WINDOW_WIDTH, WINDOW_HEIGHT);
     UI_START();
-
 
 
     Area* areaSh_ptr = new Area(Vector2f(220, 510), Vector2f(5, 5), Vector2f(0, 0), Color(0, 0, 0), Color(128, 128, 128));
@@ -144,16 +153,17 @@ int main()
         sf::String(L"DeleteOBJ"), 25, Color::Black
     );
     TextClass x(32, Vector2f(5, 396), Color::Black, *areaSh_ptr, sf::String(L"X:"));
-    TextClass x_val(32, Vector2f(37, 396), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { OBJMove(Vector3i(1, 0, 0), self.drawing_text); });
+    TextClass x_val(32, Vector2f(37, 396), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { NullFunction(); });
     x_val_ptr = &x_val;
     TextClass y(32, Vector2f(5, 428), Color::Black, *areaSh_ptr, sf::String(L"Y:"));
-    TextClass y_val(32, Vector2f(37, 428), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { OBJMove(Vector3i(0, 1, 0), self.drawing_text); });
+    TextClass y_val(32, Vector2f(37, 428), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { NullFunction(); });
     y_val_ptr = &y_val;
     TextClass z(32, Vector2f(5, 460), Color::Black, *areaSh_ptr, sf::String(L"Z:"));
-    TextClass z_val(32, Vector2f(37, 460), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { OBJMove(Vector3i(0, 0, 1), self.drawing_text); });
+    TextClass z_val(32, Vector2f(37, 460), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { NullFunction(); });
     z_val_ptr = &z_val;
 
-
+    //Пример
+    //TextClass x_val(32, Vector2f(37, 396), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { OBJMove(Vector3i(1, 0, 0), self.drawing_text); });
 
     //sf::Cursor cursor;
     //cursor.loadFromSystem(sf::Cursor::Text);
