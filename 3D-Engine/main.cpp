@@ -1,5 +1,3 @@
-//Laptop
-
 #include <SFML/Graphics.hpp>
 #include <algorithm>
 #include <iostream>
@@ -17,9 +15,13 @@ extern vector<triangle> to_draw;
 
 mesh* SelectedMesh;
 
-TextClass* x_val_ptr = nullptr;
-TextClass* y_val_ptr = nullptr;
-TextClass* z_val_ptr = nullptr;
+TextClass* x_val_pos_ptr = nullptr;
+TextClass* y_val_pos_ptr = nullptr;
+TextClass* z_val_pos_ptr = nullptr;
+
+TextClass* x_val_scale_ptr = nullptr;
+TextClass* y_val_scale_ptr = nullptr;
+TextClass* z_val_scale_ptr = nullptr;
 
 bool PointInTriangle(Vector2f A, Vector2f B, Vector2f C, Vector2i P)
 {
@@ -95,22 +97,31 @@ float dot(const sf::Vector2f& a, const sf::Vector2f& b)     // Скалярное произве
 
 void CreateObject()
 {
-    if (String_is_Int(x_val_ptr->drawing_text) && String_is_Int(y_val_ptr->drawing_text) && String_is_Int(z_val_ptr->drawing_text))
+    if (String_is_Int(x_val_pos_ptr->drawing_text) && 
+        String_is_Int(y_val_pos_ptr->drawing_text) && 
+        String_is_Int(z_val_pos_ptr->drawing_text) &&
+        String_is_Int(x_val_scale_ptr->drawing_text) &&
+        String_is_Int(y_val_scale_ptr->drawing_text) &&
+        String_is_Int(z_val_scale_ptr->drawing_text))
     {
-        std::replace(x_val_ptr->drawing_text.begin(), x_val_ptr->drawing_text.end(), '.', ',');
-        std::replace(y_val_ptr->drawing_text.begin(), y_val_ptr->drawing_text.end(), '.', ',');
-        std::replace(z_val_ptr->drawing_text.begin(), z_val_ptr->drawing_text.end(), '.', ',');
+        //pos
+        std::replace(x_val_pos_ptr->drawing_text.begin(), x_val_pos_ptr->drawing_text.end(), '.', ',');
+        std::replace(y_val_pos_ptr->drawing_text.begin(), y_val_pos_ptr->drawing_text.end(), '.', ',');
+        std::replace(z_val_pos_ptr->drawing_text.begin(), z_val_pos_ptr->drawing_text.end(), '.', ',');
+        //scale
+        std::replace(x_val_scale_ptr->drawing_text.begin(), x_val_scale_ptr->drawing_text.end(), '.', ',');
+        std::replace(y_val_scale_ptr->drawing_text.begin(), y_val_scale_ptr->drawing_text.end(), '.', ',');
+        std::replace(z_val_scale_ptr->drawing_text.begin(), z_val_scale_ptr->drawing_text.end(), '.', ',');
 
         new mesh(vec3(
-            std::stod(x_val_ptr->drawing_text.toAnsiString()),
-            std::stod(y_val_ptr->drawing_text.toAnsiString()),
-            std::stod(z_val_ptr->drawing_text.toAnsiString())
-        ));
-        cout << "Create: x:" << std::stod(x_val_ptr->drawing_text.toAnsiString()) <<
-            ", y:" << std::stod(y_val_ptr->drawing_text.toAnsiString()) <<
-            ", z:" << std::stod(z_val_ptr->drawing_text.toAnsiString())<<endl;
-
-        cout << "RawX:" << std::stod("0,5") << endl;
+            std::stod(x_val_pos_ptr->drawing_text.toAnsiString()),
+            std::stod(y_val_pos_ptr->drawing_text.toAnsiString()),
+            std::stod(z_val_pos_ptr->drawing_text.toAnsiString())),
+            vec3(
+                std::stod(x_val_scale_ptr->drawing_text.toAnsiString()),
+                std::stod(y_val_scale_ptr->drawing_text.toAnsiString()),
+                std::stod(z_val_scale_ptr->drawing_text.toAnsiString()))
+        );
         mesh::meshes.back()->define_as_cube();
     }
 }
@@ -154,18 +165,33 @@ int main()
         []() { DeleteObject(); },
         sf::String(L"DeleteOBJ"), 25, Color::Black
     );
-    TextClass x(32, Vector2f(5, 396), Color::Black, *areaSh_ptr, sf::String(L"X:"));
-    TextClass x_val(32, Vector2f(37, 396), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { NullFunction(); });
-    x_val_ptr = &x_val;
-    TextClass y(32, Vector2f(5, 428), Color::Black, *areaSh_ptr, sf::String(L"Y:"));
-    TextClass y_val(32, Vector2f(37, 428), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { NullFunction(); });
-    y_val_ptr = &y_val;
-    TextClass z(32, Vector2f(5, 460), Color::Black, *areaSh_ptr, sf::String(L"Z:"));
-    TextClass z_val(32, Vector2f(37, 460), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { NullFunction(); });
-    z_val_ptr = &z_val;
+
+    //Scale
+    TextClass Scale(32, Vector2f(5, 220), Color::Black, *areaSh_ptr, sf::String(L"Размер"));
+    TextClass x_scale(32, Vector2f(5, 255), Color::Black, *areaSh_ptr, sf::String(L"X:"));
+    TextClass x_val_scale(32, Vector2f(37, 255), Color::Black, *areaSh_ptr, sf::String(L"1"), [](TextClass& self) { NullFunction(); });
+    x_val_scale_ptr = &x_val_scale;
+    TextClass y_scale(32, Vector2f(5, 290), Color::Black, *areaSh_ptr, sf::String(L"Y:"));
+    TextClass y_val_scale(32, Vector2f(37, 290), Color::Black, *areaSh_ptr, sf::String(L"1"), [](TextClass& self) { NullFunction(); });
+    y_val_scale_ptr = &y_val_scale;
+    TextClass z_scale(32, Vector2f(5, 325), Color::Black, *areaSh_ptr, sf::String(L"Z:"));
+    TextClass z_val_scale(32, Vector2f(37, 325), Color::Black, *areaSh_ptr, sf::String(L"1"), [](TextClass& self) { NullFunction(); });
+    z_val_scale_ptr = &z_val_scale;
+
+    //Position
+    TextClass Pos(32, Vector2f(5, 360), Color::Black, *areaSh_ptr, sf::String(L"Позиция"));
+    TextClass x_pos(32, Vector2f(5, 396), Color::Black, *areaSh_ptr, sf::String(L"X:"));
+    TextClass x_val_pos(32, Vector2f(37, 396), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { NullFunction(); });
+    x_val_pos_ptr = &x_val_pos;
+    TextClass y_pos(32, Vector2f(5, 428), Color::Black, *areaSh_ptr, sf::String(L"Y:"));
+    TextClass y_val_pos(32, Vector2f(37, 428), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { NullFunction(); });
+    y_val_pos_ptr = &y_val_pos;
+    TextClass z_pos(32, Vector2f(5, 460), Color::Black, *areaSh_ptr, sf::String(L"Z:"));
+    TextClass z_val_pos(32, Vector2f(37, 460), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { NullFunction(); });
+    z_val_pos_ptr = &z_val_pos;
 
     //Пример
-    //TextClass x_val(32, Vector2f(37, 396), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { OBJMove(Vector3i(1, 0, 0), self.drawing_text); });
+    //TextClass x_val_pos(32, Vector2f(37, 396), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { OBJMove(Vector3i(1, 0, 0), self.drawing_text); });
 
     //sf::Cursor cursor;
     //cursor.loadFromSystem(sf::Cursor::Text);

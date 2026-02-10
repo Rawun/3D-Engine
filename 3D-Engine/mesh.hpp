@@ -91,8 +91,13 @@ public:
     static std::vector<mesh*> meshes;   // Массив указателей на мешы
     std::vector<triangle> tris;
     vec3 offset;    // Смещение относительно всех треугольников
-    mesh(vec3 offset) : offset(offset) { tris = {}; meshes.push_back(this); }   // Создание пустого меша
-    mesh(vec3 offset, std::vector<triangle>& TRIS) : offset(offset), tris(TRIS)     // Создание меша с готовыми полигонами
+    vec3 scale = {1, 1, 1};     // Размер фигуры
+    // Создание пустого меша
+    mesh(vec3 offset) : offset(offset) { tris = {}; meshes.push_back(this); }
+    // Создание пустого меша c размером
+    mesh(vec3 offset, vec3 scale) : offset(offset), scale(scale) { tris = {}; meshes.push_back(this); }
+    // Создание меша с готовыми полигонами
+    mesh(vec3 offset, std::vector<triangle>& TRIS) : offset(offset), tris(TRIS)     
     { 
         meshes.push_back(this); 
         
@@ -134,10 +139,11 @@ public:
             triangle(vec3(1.0f, 0.0f, 1.0f),    vec3(0.0f, 0.0f, 0.0f),    vec3(1.0f, 0.0f, 0.0f)),
         };
 
-        for (int i = 0; i < this->tris.size(); i++)  // OffSet
+        for (int i = 0; i < this->tris.size(); i++)  // *Scale -> +OffSet
         {
             for (int j = 0; j < 3; j++)
             {
+                this->tris[i].p[j] = this->tris[i].p[j] * scale;
                 this->tris[i].p[j] = this->tris[i].p[j] + offset;
             }
         }

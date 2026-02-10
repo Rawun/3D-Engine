@@ -24,6 +24,9 @@ public:
     friend vec3 cross_prod(vec3 a, vec3 b) { return vec3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x); }    // Деление вектора на вектор
     float len() { return sqrt(x * x + y * y + z * z); }     // Длинна вектора(Нормализация)
     void norm() { *this /= sqrt(x * x + y * y + z * z); }   // Деление с присвоение на нормализованый вектор
+    //ПО ЧИСЛЕННО
+    friend vec3 operator * (vec3 v1, vec3 v2) { return vec3(v1.x * v2.x, v1.y * v2.y, v1.z * v2.z); }    // Умножение вектора на вектор    //ПО ЧИСЛЕННО
+    //ПО ЧИСЛЕННО
 };
 
 inline vec3 intersectPlane(vec3& plane_p, vec3& plane_n, vec3& lineStart, vec3& lineEnd, float& t)
