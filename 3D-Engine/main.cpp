@@ -152,50 +152,46 @@ int main()
     UI_START();
 
 
-    Area* areaSh_ptr = new Area(Vector2f(220, 510), Vector2f(5, 5), Vector2f(0, 0), Color(0, 0, 0), Color(128, 128, 128));
+    Area* areaSh_ptr = new Area(Vector2f(300, 600), Vector2f(5, 5), Vector2f(0, 0), Color(0, 0, 0), Color(128, 128, 128));
     Area::areaArray.push_back(areaSh_ptr);
 
-    Button CreateOBJ(Vector2f(200, 50), Vector2f(5, 5), Color(0, 100, 0), *areaSh_ptr,
+    Button CreateOBJ(Vector2f(230, 50), Vector2f(30, 315), Color(0, 100, 0), *areaSh_ptr,
         []() { CreateObject(); },
         sf::String(L"Создать объект"), 25, Color::Black
     );
 
 
-    Button DeleteOBJ(Vector2f(200, 50), Vector2f(5, 145), Color(100, 0, 0), *areaSh_ptr,
+    Button DeleteOBJ(Vector2f(230, 50), Vector2f(30, 375), Color(100, 0, 0), *areaSh_ptr,
         []() { DeleteObject(); },
-        sf::String(L"DeleteOBJ"), 25, Color::Black
+        sf::String(L"Удалить объект"), 25, Color::Black
     );
-
+    
     //Scale
-    TextClass Scale(32, Vector2f(5, 220), Color::Black, *areaSh_ptr, sf::String(L"Размер"));
-    TextClass x_scale(32, Vector2f(5, 255), Color::Black, *areaSh_ptr, sf::String(L"X:"));
-    TextClass x_val_scale(32, Vector2f(37, 255), Color::Black, *areaSh_ptr, sf::String(L"1"), [](TextClass& self) { NullFunction(); });
+    TextClass Scale(32, Vector2f(5, 440), Color::Black, *areaSh_ptr, sf::String(L"Размер"));
+    TextClass x_scale(32, Vector2f(5, 475), Color::Black, *areaSh_ptr, sf::String(L"X:"));
+    TextClass x_val_scale(32, Vector2f(37, 475), Color::Black, *areaSh_ptr, sf::String(L"1"), [](TextClass& self) { NullFunction(); });
     x_val_scale_ptr = &x_val_scale;
-    TextClass y_scale(32, Vector2f(5, 290), Color::Black, *areaSh_ptr, sf::String(L"Y:"));
-    TextClass y_val_scale(32, Vector2f(37, 290), Color::Black, *areaSh_ptr, sf::String(L"1"), [](TextClass& self) { NullFunction(); });
+    TextClass y_scale(32, Vector2f(5, 510), Color::Black, *areaSh_ptr, sf::String(L"Y:"));
+    TextClass y_val_scale(32, Vector2f(37, 510), Color::Black, *areaSh_ptr, sf::String(L"1"), [](TextClass& self) { NullFunction(); });
     y_val_scale_ptr = &y_val_scale;
-    TextClass z_scale(32, Vector2f(5, 325), Color::Black, *areaSh_ptr, sf::String(L"Z:"));
-    TextClass z_val_scale(32, Vector2f(37, 325), Color::Black, *areaSh_ptr, sf::String(L"1"), [](TextClass& self) { NullFunction(); });
+    TextClass z_scale(32, Vector2f(5, 545), Color::Black, *areaSh_ptr, sf::String(L"Z:"));
+    TextClass z_val_scale(32, Vector2f(37, 545), Color::Black, *areaSh_ptr, sf::String(L"1"), [](TextClass& self) { NullFunction(); });
     z_val_scale_ptr = &z_val_scale;
 
     //Position
-    TextClass Pos(32, Vector2f(5, 360), Color::Black, *areaSh_ptr, sf::String(L"Позиция"));
-    TextClass x_pos(32, Vector2f(5, 396), Color::Black, *areaSh_ptr, sf::String(L"X:"));
-    TextClass x_val_pos(32, Vector2f(37, 396), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { NullFunction(); });
+    TextClass Pos(32, Vector2f(145, 440), Color::Black, *areaSh_ptr, sf::String(L"Позиция"));
+    TextClass x_pos(32, Vector2f(145, 475), Color::Black, *areaSh_ptr, sf::String(L"X:"));
+    TextClass x_val_pos(32, Vector2f(177, 475), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { NullFunction(); });
     x_val_pos_ptr = &x_val_pos;
-    TextClass y_pos(32, Vector2f(5, 428), Color::Black, *areaSh_ptr, sf::String(L"Y:"));
-    TextClass y_val_pos(32, Vector2f(37, 428), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { NullFunction(); });
+    TextClass y_pos(32, Vector2f(145, 510), Color::Black, *areaSh_ptr, sf::String(L"Y:"));
+    TextClass y_val_pos(32, Vector2f(177, 510), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { NullFunction(); });
     y_val_pos_ptr = &y_val_pos;
-    TextClass z_pos(32, Vector2f(5, 460), Color::Black, *areaSh_ptr, sf::String(L"Z:"));
-    TextClass z_val_pos(32, Vector2f(37, 460), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { NullFunction(); });
+    TextClass z_pos(32, Vector2f(145, 545), Color::Black, *areaSh_ptr, sf::String(L"Z:"));
+    TextClass z_val_pos(32, Vector2f(177, 545), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { NullFunction(); });
     z_val_pos_ptr = &z_val_pos;
 
-    //Пример
-    //TextClass x_val_pos(32, Vector2f(37, 396), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { OBJMove(Vector3i(1, 0, 0), self.drawing_text); });
-
-    //sf::Cursor cursor;
-    //cursor.loadFromSystem(sf::Cursor::Text);
-    //window.setMouseCursor(cursor);
+    Area* areaSq_ptr = new Area(Vector2f(300, 300), Vector2f(5, 5), Vector2f(0, 0), Color(0, 0, 0), Color(150, 150, 150));
+    Area::areaArray.push_back(areaSq_ptr);
 
     while (window.isOpen())
     {
