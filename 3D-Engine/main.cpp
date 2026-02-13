@@ -1,4 +1,4 @@
-#include <SFML/Graphics.hpp>
+п»ї#include <SFML/Graphics.hpp>
 #include <algorithm>
 #include <iostream>
 #include "3D.hpp"
@@ -37,7 +37,7 @@ bool PointInTriangle(Vector2f A, Vector2f B, Vector2f C, Vector2i P)
 
 void Main_MousePress()
 {
-    //Обнаружение объекта в пределах курсора в Project1
+    //РћР±РЅР°СЂСѓР¶РµРЅРёРµ РѕР±СЉРµРєС‚Р° РІ РїСЂРµРґРµР»Р°С… РєСѓСЂСЃРѕСЂР° РІ Project1
     SelectedMesh == nullptr;
 
     for (auto& T : to_draw)
@@ -68,11 +68,11 @@ bool String_is_Int(sf::String str)
 
         if (c == '-')
         {
-            if (i != 0) return false; // '-' только в начале
+            if (i != 0) return false; // '-' С‚РѕР»СЊРєРѕ РІ РЅР°С‡Р°Р»Рµ
         }
         else if (c == '.' || c == ',')
         {
-            if (hasDot) return false; // только одна точка или запятая
+            if (hasDot) return false; // С‚РѕР»СЊРєРѕ РѕРґРЅР° С‚РѕС‡РєР° РёР»Рё Р·Р°РїСЏС‚Р°СЏ
             hasDot = true;
         }
         else if (isdigit(c))
@@ -81,14 +81,14 @@ bool String_is_Int(sf::String str)
         }
         else
         {
-            return false; // любой другой символ
+            return false; // Р»СЋР±РѕР№ РґСЂСѓРіРѕР№ СЃРёРјРІРѕР»
         }
     }
 
-    return hasDigit; // обязательно хотя бы одна цифра
+    return hasDigit; // РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ С…РѕС‚СЏ Р±С‹ РѕРґРЅР° С†РёС„СЂР°
 }
 
-float dot(const sf::Vector2f& a, const sf::Vector2f& b)     // Скалярное произведение 2D векторов
+float dot(const sf::Vector2f& a, const sf::Vector2f& b)     // РЎРєР°Р»СЏСЂРЅРѕРµ РїСЂРѕРёР·РІРµРґРµРЅРёРµ 2D РІРµРєС‚РѕСЂРѕРІ
 {
     return a.x * b.x + a.y * b.y;
 }
@@ -146,6 +146,9 @@ void DeleteObject()
 void NullFunction() {};
 
 
+void PreviousFigure() { cout << "Fig\n"; };
+
+
 int main()
 {
     OBJ_START(window, WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -157,17 +160,17 @@ int main()
 
     Button CreateOBJ(Vector2f(230, 50), Vector2f(30, 315), Color(0, 100, 0), *areaSh_ptr,
         []() { CreateObject(); },
-        sf::String(L"Создать объект"), 25, Color::Black
+        sf::String(L"РЎРѕР·РґР°С‚СЊ РѕР±СЉРµРєС‚"), 25, Color::Black
     );
 
 
     Button DeleteOBJ(Vector2f(230, 50), Vector2f(30, 375), Color(100, 0, 0), *areaSh_ptr,
         []() { DeleteObject(); },
-        sf::String(L"Удалить объект"), 25, Color::Black
+        sf::String(L"РЈРґР°Р»РёС‚СЊ РѕР±СЉРµРєС‚"), 25, Color::Black
     );
     
     //Scale
-    TextClass Scale(32, Vector2f(5, 440), Color::Black, *areaSh_ptr, sf::String(L"Размер"));
+    TextClass Scale(32, Vector2f(5, 440), Color::Black, *areaSh_ptr, sf::String(L"Р Р°Р·РјРµСЂ"));
     TextClass x_scale(32, Vector2f(5, 475), Color::Black, *areaSh_ptr, sf::String(L"X:"));
     TextClass x_val_scale(32, Vector2f(37, 475), Color::Black, *areaSh_ptr, sf::String(L"1"), [](TextClass& self) { NullFunction(); });
     x_val_scale_ptr = &x_val_scale;
@@ -179,7 +182,7 @@ int main()
     z_val_scale_ptr = &z_val_scale;
 
     //Position
-    TextClass Pos(32, Vector2f(145, 440), Color::Black, *areaSh_ptr, sf::String(L"Позиция"));
+    TextClass Pos(32, Vector2f(145, 440), Color::Black, *areaSh_ptr, sf::String(L"РџРѕР·РёС†РёСЏ"));
     TextClass x_pos(32, Vector2f(145, 475), Color::Black, *areaSh_ptr, sf::String(L"X:"));
     TextClass x_val_pos(32, Vector2f(177, 475), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { NullFunction(); });
     x_val_pos_ptr = &x_val_pos;
@@ -190,8 +193,20 @@ int main()
     TextClass z_val_pos(32, Vector2f(177, 545), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { NullFunction(); });
     z_val_pos_ptr = &z_val_pos;
 
-    Area* areaSq_ptr = new Area(Vector2f(300, 300), Vector2f(5, 5), Vector2f(0, 0), Color(0, 0, 0), Color(150, 150, 150));
-    Area::areaArray.push_back(areaSq_ptr);
+    Area* areaFig_ptr = new Area(Vector2f(300, 300), Vector2f(5, 5), Vector2f(0, 0), Color(0, 0, 0), Color(150, 150, 150));
+    Area::areaArray.push_back(areaFig_ptr);
+
+    Texture texture;
+    if (!texture.loadFromFile("images/cube.png")) cout << "Error load image";
+    Sprite sprite;
+    sprite.setTexture(texture);
+    sprite.setPosition(Vector2f(50, 10));
+
+    
+    Button left_arrow(Vector2f(50, 50), Vector2f(15, 210), Color(255, 255, 255), *areaFig_ptr,
+        []() {PreviousFigure(); },
+        sf::String(L"в†ђ "), 50, Color::Black
+    );
 
     while (window.isOpen())
     {
@@ -200,6 +215,7 @@ int main()
 
         OBJ_render(window, WINDOW_WIDTH, WINDOW_HEIGHT);
         UI(window);
+        window.draw(sprite);
 
         window.display();
     }

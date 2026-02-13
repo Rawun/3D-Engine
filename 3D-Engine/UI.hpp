@@ -432,7 +432,7 @@ int UI_START()
 {
     setlocale(LC_ALL, "ru");
 
-    if (!font.loadFromFile("font/arial.ttf")) {
+    if (!font.loadFromFile("font/segoeui.ttf")) {
         std::cout << "Font upload Error!" << std::endl;
     }   // Font upload
 
