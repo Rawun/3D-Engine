@@ -54,6 +54,7 @@ void Main_MousePress()
     }
 }
 
+
 bool String_is_Int(sf::String str)
 {
     std::string s = str.toAnsiString();
@@ -203,10 +204,12 @@ int main()
     sprite.setPosition(Vector2f(50, 10));
 
     
-    Button left_arrow(Vector2f(50, 50), Vector2f(15, 210), Color(255, 255, 255), *areaFig_ptr,
-        []() {PreviousFigure(); },
-        sf::String(L"← "), 50, Color::Black
+    TextClass figure_name(32, Vector2f(20, 200), Color::Black, *areaFig_ptr, sf::String(L"Куб"));
+
+    Button left_arrow_B(Vector2f(50, 40), Vector2f(15, 240), Color(100, 100, 100), *areaFig_ptr,
+        []() {PreviousFigure(); }
     );
+    TextClass left_arrow_T(50, Vector2f(20, 225), Color::Black, *areaFig_ptr, sf::String(L"←"));
 
     while (window.isOpen())
     {
