@@ -203,7 +203,7 @@ int main()
     sprite.setPosition(Vector2f(50, 10));
 
     
-    Button left_arrow(Vector2f(50, 50), Vector2f(15, 210), Color(255, 255, 255), *areaFig_ptr,
+    Button left_arrow(Vector2f(50, 50), Vector2f(15, 210), Color(75, 75, 75), *areaFig_ptr,
         []() {PreviousFigure(); },
         sf::String(L"← "), 50, Color::Black
     );
