@@ -54,6 +54,7 @@ void Main_MousePress()
     }
 }
 
+
 bool String_is_Int(sf::String str)
 {
     std::string s = str.toAnsiString();
@@ -146,7 +147,13 @@ void DeleteObject()
 void NullFunction() {};
 
 
-void PreviousFigure() { cout << "Fig\n"; };
+void PreviousFigure(TextClass& text) 
+{ 
+    cout << "PFig\n";
+    cout << text.<<endl;
+};
+
+void NextFigure() { cout << "NFig\n"; };
 
 
 int main()
@@ -203,10 +210,18 @@ int main()
     sprite.setPosition(Vector2f(50, 10));
 
     
-    Button left_arrow(Vector2f(50, 50), Vector2f(15, 210), Color(75, 75, 75), *areaFig_ptr,
-        []() {PreviousFigure(); },
-        sf::String(L"← "), 50, Color::Black
+
+    TextClass figure_name(32, Vector2f(100, 240), Color::Black, *areaFig_ptr, sf::String(L"Куб"));
+
+    Button left_arrow_B(Vector2f(50, 40), Vector2f(15, 240), Color(75, 75, 75), *areaFig_ptr,
+        [&figure_name]() {PreviousFigure(figure_name); }
     );
+    TextClass left_arrow_T(50, Vector2f(20, 225), Color::Black, *areaFig_ptr, sf::String(L"←"));
+
+    Button right_arrow_B(Vector2f(50, 40), Vector2f(215, 240), Color(75, 75, 75), *areaFig_ptr,
+        []() {NextFigure(); }
+    );
+    TextClass right_arrow_T(50, Vector2f(218, 225), Color::Black, *areaFig_ptr, sf::String(L"→"));
 
     while (window.isOpen())
     {
