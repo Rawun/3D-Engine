@@ -4,8 +4,10 @@
 #include <iostream>
 #include <string>
 #include <functional>
+#include <memory>
 using namespace std;
 using namespace sf;
+
 
 class Area;
 class Button;
@@ -51,7 +53,7 @@ public:
     Color border_color;
     Color area_color;
 
-    static vector<Area*> areaArray;
+    static vector<shared_ptr<Area>> areaArray;
     vector<shared_ptr<Drawable>> shapesArray;
 
     Area(Vector2f size, Vector2f borderSize,
@@ -423,7 +425,7 @@ public:
 };
 
 //=============================================================================================
-vector<Area*> Area::areaArray;
+vector<shared_ptr<Area>> Area::areaArray;
 
 int frame = 0;
 bool cursor_visible = true;
@@ -481,7 +483,7 @@ int UI(RenderWindow& window)
     else frame = 0;
 
     //Рисование интерфейса
-    for (auto* ares : Area::areaArray)
+    for (auto& ares : Area::areaArray)
         for (auto& shps : ares->shapesArray)
         {
             window.draw(*shps);

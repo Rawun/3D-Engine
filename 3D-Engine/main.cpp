@@ -4,6 +4,8 @@
 #include "3D.hpp"
 #include "UI.hpp"
 #include <string>
+#include <vector>
+#include <memory>
 using namespace std;
 using namespace sf;
 
@@ -13,7 +15,7 @@ RenderWindow window(VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "3D Engine");
 
 extern vector<triangle> to_draw;
 
-mesh* SelectedMesh;
+weak_ptr<mesh> SelectedMesh;
 
 TextClass* x_val_pos_ptr = nullptr;
 TextClass* y_val_pos_ptr = nullptr;
@@ -22,6 +24,24 @@ TextClass* z_val_pos_ptr = nullptr;
 TextClass* x_val_scale_ptr = nullptr;
 TextClass* y_val_scale_ptr = nullptr;
 TextClass* z_val_scale_ptr = nullptr;
+
+vector<vector<string>> id_an_name =
+{
+    {"point", "line", "plane", "cube", "tetraedr", "prism", "parallelepiped", "pyramid", "sphere", "cylinder", "cone"},
+    {"Точка", "Прямая", "Плосткость", "Куб", "Тетрадр", "Призма", "Параллелепипед", "Пирамида", "Шар", "Цилиндр", "Конус"}
+};
+
+
+vector<Texture> texture;
+
+
+//============================================================
+void ProgramEnd()
+{
+    
+}
+//============================================================
+
 
 bool PointInTriangle(Vector2f A, Vector2f B, Vector2f C, Vector2i P)
 {
@@ -38,7 +58,7 @@ bool PointInTriangle(Vector2f A, Vector2f B, Vector2f C, Vector2i P)
 void Main_MousePress()
 {
     //Обнаружение объекта в пределах курсора в Project1
-    SelectedMesh == nullptr;
+    SelectedMesh.reset();
 
     for (auto& T : to_draw)
     {
@@ -49,7 +69,6 @@ void Main_MousePress()
             sf::Mouse::getPosition(window)))
         {
             SelectedMesh = T.owner;
-            cout << T.owner << endl;
         }
     }
 }
@@ -114,7 +133,7 @@ void CreateObject()
         std::replace(y_val_scale_ptr->drawing_text.begin(), y_val_scale_ptr->drawing_text.end(), '.', ',');
         std::replace(z_val_scale_ptr->drawing_text.begin(), z_val_scale_ptr->drawing_text.end(), '.', ',');
 
-        new mesh(vec3(
+        auto m = mesh::create(vec3(
             std::stod(x_val_pos_ptr->drawing_text.toAnsiString()),
             std::stod(y_val_pos_ptr->drawing_text.toAnsiString()),
             std::stod(z_val_pos_ptr->drawing_text.toAnsiString())),
@@ -123,23 +142,26 @@ void CreateObject()
                 std::stod(y_val_scale_ptr->drawing_text.toAnsiString()),
                 std::stod(z_val_scale_ptr->drawing_text.toAnsiString()))
         );
-        mesh::meshes.back()->define_as_cube();
+        m->define_as_cube();
     }
 }
 
 
 void DeleteObject()
 {
-    if (SelectedMesh)
+    if (!SelectedMesh.expired())
     {
-        auto it = std::find(mesh::meshes.begin(), mesh::meshes.end(), SelectedMesh);
+        auto it = std::find(
+            mesh::meshes.begin(),
+            mesh::meshes.end(),
+            SelectedMesh.lock());
+
         if (it != mesh::meshes.end())
         {
-            delete* it;
             mesh::meshes.erase(it);
         }
     }
-    SelectedMesh = nullptr;
+    SelectedMesh.reset();
     cout << "Delete" << endl;
 }
 
@@ -150,7 +172,10 @@ void NullFunction() {};
 void PreviousFigure(TextClass& text) 
 { 
     cout << "PFig\n";
-    cout << text.<<endl;
+    
+    text.text_ptr->setPosition(140 - (text.text_ptr->getGlobalBounds().width / 2),
+        text.text_ptr->getPosition().y);
+    cout << text.text_ptr->getPosition().x << endl;
 };
 
 void NextFigure() { cout << "NFig\n"; };
@@ -161,8 +186,7 @@ int main()
     OBJ_START(window, WINDOW_WIDTH, WINDOW_HEIGHT);
     UI_START();
 
-
-    Area* areaSh_ptr = new Area(Vector2f(300, 600), Vector2f(5, 5), Vector2f(0, 0), Color(0, 0, 0), Color(128, 128, 128));
+    shared_ptr<Area> areaSh_ptr = make_shared<Area>(Vector2f(300, 600), Vector2f(5, 5), Vector2f(0, 0), Color(0, 0, 0), Color(128, 128, 128));
     Area::areaArray.push_back(areaSh_ptr);
 
     Button CreateOBJ(Vector2f(230, 50), Vector2f(30, 315), Color(0, 100, 0), *areaSh_ptr,
@@ -200,18 +224,27 @@ int main()
     TextClass z_val_pos(32, Vector2f(177, 545), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { NullFunction(); });
     z_val_pos_ptr = &z_val_pos;
 
-    Area* areaFig_ptr = new Area(Vector2f(300, 300), Vector2f(5, 5), Vector2f(0, 0), Color(0, 0, 0), Color(150, 150, 150));
+    
+    shared_ptr<Area> areaFig_ptr = make_shared<Area>(Vector2f(300, 300), Vector2f(5, 5), Vector2f(0, 0), Color(0, 0, 0), Color(150, 150, 150));
     Area::areaArray.push_back(areaFig_ptr);
+    
+    
+    for (int i = 0; i < id_an_name[0].size(); i++)
+    {
+        texture.emplace_back();
+        
+        string filedir = "images/" + id_an_name[0][i] + ".png";
 
-    Texture texture;
-    if (!texture.loadFromFile("images/cube.png")) cout << "Error load image";
+        texture.back().loadFromFile(filedir);
+    }
+
+
     Sprite sprite;
-    sprite.setTexture(texture);
+    sprite.setTexture(texture[3]);
     sprite.setPosition(Vector2f(50, 10));
 
-    
 
-    TextClass figure_name(32, Vector2f(100, 240), Color::Black, *areaFig_ptr, sf::String(L"Куб"));
+    TextClass figure_name(32, Vector2f(112, 240), Color::Black, *areaFig_ptr, sf::String(L"Куб"));  // -5px from x из-за учёта Area
 
     Button left_arrow_B(Vector2f(50, 40), Vector2f(15, 240), Color(75, 75, 75), *areaFig_ptr,
         [&figure_name]() {PreviousFigure(figure_name); }
@@ -222,7 +255,7 @@ int main()
         []() {NextFigure(); }
     );
     TextClass right_arrow_T(50, Vector2f(218, 225), Color::Black, *areaFig_ptr, sf::String(L"→"));
-
+    
     while (window.isOpen())
     {
         window.clear(Color::White);
@@ -230,8 +263,10 @@ int main()
 
         OBJ_render(window, WINDOW_WIDTH, WINDOW_HEIGHT);
         UI(window);
-        window.draw(sprite);
+        window.draw(sprite);        // Хуйня -> Убрать
 
         window.display();
     }
+
+    ProgramEnd();
 }

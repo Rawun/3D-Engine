@@ -9,10 +9,9 @@
 #include "mathematics.hpp"
 
 
-struct triangle
+struct triangle : public std::enable_shared_from_this<triangle>
 {
-    class mesh* owner = nullptr;
-
+    std::weak_ptr<class mesh> owner; 
     std::vector<vec3> p;    // Точки треугольника
     vec3 normal;
     triangle() { p = std::vector<vec3>(3); }    // Создание треугольника с точками (0, 0, 0), (0, 0, 0), (0, 0, 0)
@@ -85,35 +84,43 @@ struct triangle
     }
 };
 
-class mesh
+class mesh : public std::enable_shared_from_this<mesh>
 {
 public:
-    static std::vector<mesh*> meshes;   // Массив указателей на мешы
+    static std::vector<std::shared_ptr<mesh>> meshes;   // Массив указателей на мешы
     std::vector<triangle> tris;
     vec3 offset;    // Смещение относительно всех треугольников
     vec3 scale = {1, 1, 1};     // Размер фигуры
-    // Создание пустого меша
-    mesh(vec3 offset) : offset(offset) { tris = {}; meshes.push_back(this); }
-    // Создание пустого меша c размером
-    mesh(vec3 offset, vec3 scale) : offset(offset), scale(scale) { tris = {}; meshes.push_back(this); }
-    // Создание меша с готовыми полигонами
-    mesh(vec3 offset, std::vector<triangle>& TRIS) : offset(offset), tris(TRIS)     
-    { 
-        meshes.push_back(this); 
-        
-        for (auto tr : this->tris)
-        {
-            for (int i = 0; i < 3; i++)
-            {
-                tr.p[i] = tr.p[i] + offset;
-            }
-        }
 
-        for (auto& t : tris)
-        {
-            t.owner = this;     // Задавание каждому треугольнику владельца "mesh"
-        }
+    static std::shared_ptr<mesh> create(vec3 offset, vec3 scale)
+    {
+        auto ptr = std::shared_ptr<mesh>(new mesh(offset, scale));
+        meshes.push_back(ptr);
+        return ptr;
     }
+
+    //// Создание пустого меша
+    //mesh(vec3 offset) : offset(offset) { tris = {}; meshes.push_back(shared_from_this());}
+    //// Создание пустого меша c размером
+    //mesh(vec3 offset, vec3 scale) : offset(offset), scale(scale) { tris = {}; meshes.push_back(shared_from_this());}
+    //// Создание меша с готовыми полигонами
+    //mesh(vec3 offset, std::vector<triangle>& TRIS) : offset(offset), tris(TRIS)     
+    //{ 
+    //    meshes.push_back(shared_from_this());
+    //    
+    //    for (auto tr : this->tris)
+    //    {
+    //        for (int i = 0; i < 3; i++)
+    //        {
+    //            tr.p[i] = tr.p[i] + offset;
+    //        }
+    //    }
+
+    //    for (auto& t : tris)
+    //    {
+    //        t.owner = shared_from_this();;     // Задавание каждому треугольнику владельца "mesh"
+    //    }
+    //}
 
     void define_as_cube()
     {
@@ -149,7 +156,12 @@ public:
         }
         for (auto& t : tris)
         {
-            t.owner = this;     // Задавание каждому треугольнику владельца "mesh"
+            t.owner = shared_from_this();;     // Задавание каждому треугольнику владельца "mesh"
         }
+    }
+
+private:
+    mesh(vec3 offset, vec3 scale)
+        : offset(offset), scale(scale) {
     }
 };

@@ -9,7 +9,7 @@
 #include "UI.hpp"
 #include "main.hpp"
 
-std::vector<mesh*> mesh::meshes = {};
+std::vector<std::shared_ptr<mesh>> mesh::meshes = {};
 vector<triangle> to_draw;
 
 
