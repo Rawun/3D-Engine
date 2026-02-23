@@ -5,7 +5,6 @@
 #include "UI.hpp"
 #include <string>
 #include <vector>
-#include <memory>
 using namespace std;
 using namespace sf;
 
@@ -239,9 +238,11 @@ int main()
     }
 
 
-    Sprite sprite;
-    sprite.setTexture(texture[3]);
-    sprite.setPosition(Vector2f(50, 10));
+    auto sprite = make_unique<Sprite>();
+    sprite->setTexture(texture[3]);
+    sprite->setPosition(Vector2f(50, 10));
+    areaFig_ptr->shapesArray.push_back(move(sprite));
+
 
 
     TextClass figure_name(32, Vector2f(112, 240), Color::Black, *areaFig_ptr, sf::String(L"Куб"));  // -5px from x из-за учёта Area
@@ -263,7 +264,6 @@ int main()
 
         OBJ_render(window, WINDOW_WIDTH, WINDOW_HEIGHT);
         UI(window);
-        window.draw(sprite);        // Хуйня -> Убрать
 
         window.display();
     }
