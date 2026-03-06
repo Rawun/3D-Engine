@@ -47,30 +47,30 @@ public:
 class Area
 {
 public:
-    unique_ptr<RectangleShape> borderSh_ptr;
-    unique_ptr<RectangleShape> areaSh_ptr;
+    shared_ptr<RectangleShape> borderSh_ptr;
+    shared_ptr<RectangleShape> areaSh_ptr;
     Vector2f borderSize;
     Color border_color;
     Color area_color;
 
     static vector<shared_ptr<Area>> areaArray;
-    vector<unique_ptr<Drawable>> shapesArray;
+    vector<shared_ptr<Drawable>> shapesArray;
 
     Area(Vector2f size, Vector2f borderSize,
         Vector2f pos, Color border_color, Color area_color) :
         borderSize(borderSize), border_color(border_color), area_color(area_color)
     {
         //1 borderSh_ptr
-        borderSh_ptr = make_unique<RectangleShape>(size);
+        borderSh_ptr = make_shared<RectangleShape>(size);
         borderSh_ptr->setPosition(pos);
         borderSh_ptr->setFillColor(border_color);
-        shapesArray.push_back(move(borderSh_ptr));
+        shapesArray.push_back(borderSh_ptr);
         
         //2 borderSh_ptr
-        areaSh_ptr = make_unique<RectangleShape>(size - Vector2f(borderSize.x * 2, borderSize.y * 2));
+        areaSh_ptr = make_shared<RectangleShape>(size - Vector2f(borderSize.x * 2, borderSize.y * 2));
         areaSh_ptr->setPosition(pos + borderSize);
         areaSh_ptr->setFillColor(area_color);
-        shapesArray.push_back(move(areaSh_ptr));
+        shapesArray.push_back(areaSh_ptr);
     }
 };
 
@@ -81,7 +81,7 @@ class Button : public Pressable
 {
 public:
     bool single_aim = false;
-    unique_ptr<RectangleShape> button_ptr;
+    shared_ptr<RectangleShape> button_ptr;
     Vector2f size;
     Vector2f pos;
     Color color;
@@ -93,10 +93,10 @@ public:
         std::function<void()> onClick) :
         size(size), pos(pos), color(color), area(area), onClick(onClick)
     {
-        button_ptr = make_unique<RectangleShape>(size);
+        button_ptr = make_shared<RectangleShape>(size);
         button_ptr->setPosition(Vector2f( area.borderSh_ptr->getPosition() + area.borderSize + pos));
         button_ptr->setFillColor(color);
-        area.shapesArray.push_back(move(button_ptr));
+        area.shapesArray.push_back(button_ptr);
         pressables.push_back(this);
     }
 
@@ -105,14 +105,14 @@ public:
         std::function<void()> onClick, sf::String str, int text_size, Color text_color) :
         size(size), pos(pos), color(color), area(area), onClick(onClick)
     {
-        button_ptr = make_unique<RectangleShape>(size);
+        button_ptr = make_shared<RectangleShape>(size);
         button_ptr->setPosition(Vector2f(area.borderSh_ptr->getPosition() + area.borderSize + pos));
         button_ptr->setFillColor(color);
-        area.shapesArray.push_back(move(button_ptr));
+        area.shapesArray.push_back(button_ptr);
         pressables.push_back(this);
 
 
-        auto text = make_unique<Text>();
+        auto text = make_shared<Text>();
 
         text->setFont(font);
         text->setString(str);
@@ -120,7 +120,7 @@ public:
         text->setFillColor(text_color);
         text->setPosition(pos.x + (size.x / 2) + text_size * 0.2 - text->getGlobalBounds().width / 2, pos.y + (size.y / 2) - (text_size) / 2);
 
-        area.shapesArray.push_back(move(text));
+        area.shapesArray.push_back(text);
     }
 
     void Move(RenderWindow& window) override
@@ -190,7 +190,7 @@ public:
 //=============================================================================================
 class TextClass;
 
-unique_ptr<Text> editing_text;
+shared_ptr<Text> editing_text;
 sf::RectangleShape text_cursor;
 TextClass* editing_textClass;
 
@@ -199,8 +199,8 @@ class TextClass : public Pressable
 public:
     bool single_aim = false;
     sf::String drawing_text;
-    unique_ptr<RectangleShape> text_area_ptr;
-    unique_ptr<Text> text_ptr;
+    shared_ptr<RectangleShape> text_area_ptr;
+    shared_ptr<Text> text_ptr;
     Area& area;
     int pixel_space;
     std::function<void(TextClass&)> DoneEditing;
@@ -219,7 +219,7 @@ public:
     TextClass(int size, Vector2f pos, Color color, Area& area, sf::String str) :
         area(area), drawing_text(str)
     {
-        text_ptr = make_unique<Text>();
+        text_ptr = make_shared<Text>();
 
         text_ptr->setFont(font);
         text_ptr->setString(drawing_text);
@@ -233,14 +233,14 @@ public:
 
 
 
-        area.shapesArray.push_back(move(text_ptr));
+        area.shapesArray.push_back(text_ptr);
     }
 
     // NONE STYLE, EDITABLE
     TextClass(int size, Vector2f pos, Color color, Area& area, sf::String str, std::function<void(TextClass&)> DoneEditing) :
         area(area), drawing_text(str), DoneEditing(DoneEditing)
     {
-        text_ptr = make_unique<Text>();
+        text_ptr = make_shared<Text>();
 
         text_ptr->setFont(font);
         text_ptr->setString(drawing_text);
@@ -257,14 +257,14 @@ public:
 
         if (drawing_text.isEmpty())
         {
-            text_area_ptr = make_unique<RectangleShape>(
+            text_area_ptr = make_shared<RectangleShape>(
                 Vector2f(text_ptr->getCharacterSize() + pixel_space * 2,
                     text_ptr->getCharacterSize() + (pixel_space * 2))
             );
         }
         else
         {
-            text_area_ptr = make_unique<RectangleShape>(Vector2f(
+            text_area_ptr = make_shared<RectangleShape>(Vector2f(
                 text_ptr->getGlobalBounds().width + text_ptr->getCharacterSize() * 0.4,
                 text_ptr->getCharacterSize() + (pixel_space * 2))
             );
@@ -272,7 +272,7 @@ public:
 
         text_area_ptr->setPosition(Vector2f(text_ptr->getPosition().x - pixel_space, text_ptr->getPosition().y + pixel_space));
         text_area_ptr->setFillColor(Color(100, 100, 100));
-        area.shapesArray.push_back(move(text_area_ptr));
+        area.shapesArray.push_back(text_area_ptr);
         pressables.push_back(this);
         //End
 
@@ -421,6 +421,12 @@ public:
         drawing_text = "";
         (*editing_text).setString(drawing_text);
         ChangeInSizeForSimbols();
+    }
+
+    void ChangeText(const sf::String& text)
+    {
+        drawing_text = text;
+        text_ptr->setString(drawing_text);
     }
 };
 

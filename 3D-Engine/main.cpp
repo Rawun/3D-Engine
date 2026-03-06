@@ -24,14 +24,16 @@ TextClass* x_val_scale_ptr = nullptr;
 TextClass* y_val_scale_ptr = nullptr;
 TextClass* z_val_scale_ptr = nullptr;
 
-vector<vector<string>> id_an_name =
+
+vector<vector<sf::String>> id_an_name =
 {
     {"point", "line", "plane", "cube", "tetraedr", "prism", "parallelepiped", "pyramid", "sphere", "cylinder", "cone"},
-    {"Точка", "Прямая", "Плосткость", "Куб", "Тетрадр", "Призма", "Параллелепипед", "Пирамида", "Шар", "Цилиндр", "Конус"}
+    {L"Точка", L"Прямая", L"Плосткость", L"Куб", L"Тетрадр", L"Призма", L"Параллелепипед", L"Пирамида", L"Шар", L"Цилиндр", L"Конус"}
 };
 
-
 vector<Texture> texture;
+
+short fig_page = 3;
 
 
 //============================================================
@@ -167,17 +169,14 @@ void DeleteObject()
 
 void NullFunction() {};
 
+void PageUpdate(TextClass& text, shared_ptr<Sprite>& image)
+{
+    text.ChangeText(id_an_name[1][fig_page]);
+    image->setTexture(texture[fig_page]);
 
-void PreviousFigure(TextClass& text) 
-{ 
-    cout << "PFig\n";
-    
     text.text_ptr->setPosition(140 - (text.text_ptr->getGlobalBounds().width / 2),
-        text.text_ptr->getPosition().y);
-    cout << text.text_ptr->getPosition().x << endl;
-};
-
-void NextFigure() { cout << "NFig\n"; };
+        text.text_ptr->getPosition().y);    // Нужно ограничить размер sin или cos (уменьшить шрифт по типу 150*sin(font))
+}
 
 
 int main()
@@ -238,22 +237,30 @@ int main()
     }
 
 
-    auto sprite = make_unique<Sprite>();
-    sprite->setTexture(texture[3]);
-    sprite->setPosition(Vector2f(50, 10));
-    areaFig_ptr->shapesArray.push_back(move(sprite));
+    shared_ptr<Sprite> figure_image = make_shared<Sprite>();
+    figure_image->setTexture(texture[fig_page]);
+    figure_image->setPosition(Vector2f(50, 10));
+    areaFig_ptr->shapesArray.push_back(figure_image);
 
 
 
     TextClass figure_name(32, Vector2f(112, 240), Color::Black, *areaFig_ptr, sf::String(L"Куб"));  // -5px from x из-за учёта Area
-
+    
     Button left_arrow_B(Vector2f(50, 40), Vector2f(15, 240), Color(75, 75, 75), *areaFig_ptr,
-        [&figure_name]() {PreviousFigure(figure_name); }
+        [&figure_name, &figure_image]() {
+            if (fig_page > 0) fig_page--;
+            else fig_page = id_an_name[0].size() - 1; 
+            PageUpdate(figure_name, figure_image);
+        }
     );
     TextClass left_arrow_T(50, Vector2f(20, 225), Color::Black, *areaFig_ptr, sf::String(L"←"));
 
     Button right_arrow_B(Vector2f(50, 40), Vector2f(215, 240), Color(75, 75, 75), *areaFig_ptr,
-        []() {NextFigure(); }
+        [&figure_name, &figure_image]() {
+            if (fig_page < id_an_name[0].size() - 1) fig_page++;
+            else fig_page = 0;
+            PageUpdate(figure_name, figure_image);
+        }
     );
     TextClass right_arrow_T(50, Vector2f(218, 225), Color::Black, *areaFig_ptr, sf::String(L"→"));
     
