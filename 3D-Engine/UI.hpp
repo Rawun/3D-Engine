@@ -14,7 +14,8 @@ class Button;
 vector<class Pressable*> pressables;
 vector<class Pressable*> aimed;
 vector<class Pressable*> on_pressed;
-Font font;
+extern Font font;
+extern Texture mark;
 
 template <typename T>
 T clamp(T value, T minVal, T maxVal)
@@ -82,6 +83,7 @@ class Button : public Pressable
 public:
     bool single_aim = false;
     shared_ptr<RectangleShape> button_ptr;
+    shared_ptr<Text> text;
     Vector2f size;
     Vector2f pos;
     Color color;
@@ -94,7 +96,7 @@ public:
         size(size), pos(pos), color(color), area(area), onClick(onClick)
     {
         button_ptr = make_shared<RectangleShape>(size);
-        button_ptr->setPosition(Vector2f( area.borderSh_ptr->getPosition() + area.borderSize + pos));
+        button_ptr->setPosition(Vector2f(pos));
         button_ptr->setFillColor(color);
         area.shapesArray.push_back(button_ptr);
         pressables.push_back(this);
@@ -106,13 +108,13 @@ public:
         size(size), pos(pos), color(color), area(area), onClick(onClick)
     {
         button_ptr = make_shared<RectangleShape>(size);
-        button_ptr->setPosition(Vector2f(area.borderSh_ptr->getPosition() + area.borderSize + pos));
+        button_ptr->setPosition(Vector2f(pos));
         button_ptr->setFillColor(color);
         area.shapesArray.push_back(button_ptr);
         pressables.push_back(this);
 
 
-        auto text = make_shared<Text>();
+        text = make_shared<Text>();
 
         text->setFont(font);
         text->setString(str);
@@ -121,6 +123,20 @@ public:
         text->setPosition(pos.x + (size.x / 2) + text_size * 0.2 - text->getGlobalBounds().width / 2, pos.y + (size.y / 2) - (text_size) / 2);
 
         area.shapesArray.push_back(text);
+    }
+
+    ~Button()
+    {
+        area.shapesArray.erase(remove(area.shapesArray.begin(),
+            area.shapesArray.end(), button_ptr),
+            area.shapesArray.end());
+
+        if (text)
+        {
+            area.shapesArray.erase(remove(area.shapesArray.begin(),
+                area.shapesArray.end(), text),
+                area.shapesArray.end());
+        }
     }
 
     void Move(RenderWindow& window) override
@@ -225,7 +241,7 @@ public:
         text_ptr->setString(drawing_text);
         text_ptr->setCharacterSize(size);
         text_ptr->setFillColor(color);
-        text_ptr->setPosition(area.borderSh_ptr->getPosition() + area.borderSize + pos);
+        text_ptr->setPosition(pos);
 
 
         pixel_space = text_ptr->getCharacterSize() * 0.084;
@@ -246,7 +262,7 @@ public:
         text_ptr->setString(drawing_text);
         text_ptr->setCharacterSize(size);
         text_ptr->setFillColor(color);
-        text_ptr->setPosition(area.borderSh_ptr->getPosition() + area.borderSize + pos);
+        text_ptr->setPosition(pos);
 
 
         pixel_space = text_ptr->getCharacterSize() * 0.084;
@@ -289,7 +305,7 @@ public:
         text_ptr->setString(drawing_text);
         text_ptr->setCharacterSize(size);
         text_ptr->setFillColor(color);
-        text_ptr->setPosition(area.borderSh_ptr->getPosition() + area.borderSize + pos);
+        text_ptr->setPosition(pos);
         text_ptr->setStyle(style);
         text_cursor.setFillColor(Color::Black);
 
@@ -309,7 +325,7 @@ public:
         text_ptr->setString(drawing_text);
         text_ptr->setCharacterSize(size);
         text_ptr->setFillColor(color);
-        text_ptr->setPosition(area.borderSh_ptr->getPosition() + area.borderSize + pos);
+        text_ptr->setPosition(pos);
         text_ptr->setStyle(style);
         text_cursor.setFillColor(Color::Black);
 
@@ -430,6 +446,66 @@ public:
     }
 };
 
+
+class Checkbox
+{
+public:
+    bool active = false;
+    shared_ptr<RectangleShape> frame_ptr;
+    shared_ptr<Button> button_ptr;
+    shared_ptr<Sprite> mark_ptr;
+    Vector2f size;
+    Vector2f pos;
+    Area& area;
+    std::function<void()> onClick;
+
+    
+    Checkbox(Vector2f size, Vector2f pos, Area& area, std::function<void()> onClick) :
+        size(size), pos(pos), area(area), onClick(onClick)
+    {
+        frame_ptr = make_shared<RectangleShape>();
+        frame_ptr->setSize(size);
+        frame_ptr->setPosition(pos);
+        frame_ptr->setFillColor(Color::Black);
+        area.shapesArray.push_back(frame_ptr);
+        // Это перепроверить
+        button_ptr = make_shared<Button>(
+            Vector2f(size.x * 0.9, size.y * 0.9), 
+            pos + Vector2f(size.x * 0.05, size.y * 0.05), 
+            sf::Color(150, 150, 150), 
+            area, 
+            onClick
+        );
+        
+        mark_ptr = make_shared<Sprite>(mark);
+        Vector2u texSize = mark.getSize();
+
+        mark_ptr->setScale(
+            (size.x * 0.8) / texSize.x,
+            (size.y * 0.8) / texSize.y
+        );
+
+        mark_ptr->setPosition(pos + Vector2f(size.x * 0.1, size.y * 0.1));
+        area.shapesArray.push_back(mark_ptr);
+        // Это тоже
+    }
+
+    ~Checkbox()
+    {
+        area.shapesArray.erase(remove(area.shapesArray.begin(),
+            area.shapesArray.end(), frame_ptr),
+            area.shapesArray.end());
+
+        area.shapesArray.erase(remove(area.shapesArray.begin(),
+            area.shapesArray.end(), button_ptr->button_ptr),
+            area.shapesArray.end());
+
+        area.shapesArray.erase(remove(area.shapesArray.begin(),
+            area.shapesArray.end(), mark_ptr),
+            area.shapesArray.end());
+    }
+};
+
 //=============================================================================================
 vector<shared_ptr<Area>> Area::areaArray;
 
@@ -439,6 +515,10 @@ bool cursor_visible = true;
 int UI_START()
 {
     setlocale(LC_ALL, "ru");
+
+    if (!mark.loadFromFile("images/check.png")) {
+        std::cout << "Check mark upload Error!" << std::endl;
+    }   // Check mark upload
 
     if (!font.loadFromFile("font/segoeui.ttf")) {
         std::cout << "Font upload Error!" << std::endl;
