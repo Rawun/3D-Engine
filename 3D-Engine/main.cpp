@@ -175,7 +175,17 @@ void NullFunction() {};
 shared_ptr <sf::Sprite> check_sprite_ptr;
 shared_ptr <sf::Sprite> check_frame_ptr;
 shared_ptr <Button> check_button_ptr;
+vector<shared_ptr<Area>> pages;
 
+
+void CreatePageStats(shared_ptr<Area> area)
+{
+    // page 0
+    
+    // page 1
+    TextClass is_Vector(32, Vector2f(10, 300), Color::Black, *area, sf::String(L"Вектор:"));
+    Checkbox is_Vector_check(Vector2f(32, 32), Vector2f(122, 307), *area, []() { ChB_vector_line(); });
+}
 
 void ChB_vector_line()
 {
@@ -231,10 +241,6 @@ void PageUpdate(TextClass& text, shared_ptr<Sprite>& image, shared_ptr<Area> are
 
 
 }
-void Test()
-{
-    cout << "text" << endl;
-}
 
 int main()
 {
@@ -288,8 +294,6 @@ int main()
     shared_ptr<Area> areaAdd_ptr = make_shared<Area>(Vector2f(300, 300), Vector2f(5, 5), Vector2f(0, 295), Color(0, 0, 0), Color(128, 128, 128));
     Area::areaArray.push_back(areaAdd_ptr);
     
-    TextClass is_Vector(32, Vector2f(10, 300), Color::Black, *areaAdd_ptr, sf::String(L"Вектор:"));
-    Checkbox is_Vector_check(Vector2f(32, 32), Vector2f(122, 307), *areaAdd_ptr, []() { Test(); });
 
 
     // 3 Area
