@@ -131,6 +131,11 @@ public:
             area.shapesArray.end(), button_ptr),
             area.shapesArray.end());
 
+        pressables.erase(
+            remove(pressables.begin(), pressables.end(), this),
+            pressables.end()
+        );
+
         if (text)
         {
             area.shapesArray.erase(remove(area.shapesArray.begin(),
@@ -356,6 +361,15 @@ public:
         area.shapesArray.push_back(text_ptr);
     }
 
+    ~TextClass()
+    {
+        pressables.erase(
+            remove(pressables.begin(), pressables.end(), this),
+            pressables.end()
+        );
+
+        // Need to add destroyer for text sprite and pressable background
+    }
 
     void Move(RenderWindow& window) override
     {

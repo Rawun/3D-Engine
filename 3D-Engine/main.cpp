@@ -31,11 +31,11 @@ vector<vector<sf::String>> id_an_name =
     {L"Точка", L"Прямая", L"Плосткость", L"Куб", L"Тетрадр", L"Призма", L"Параллелепипед", L"Пирамида", L"Шар", L"Цилиндр", L"Конус"}
 };
 
+shared_ptr<Area> areaSh_ptr;
+
 vector<Texture> texture;
 Font font;
 Texture mark;
-
-short fig_page = 3;
 
 
 //============================================================
@@ -176,76 +176,73 @@ shared_ptr <sf::Sprite> check_sprite_ptr;
 shared_ptr <sf::Sprite> check_frame_ptr;
 shared_ptr <Button> check_button_ptr;
 vector<shared_ptr<Area>> pages;
-
-
-void CreatePageStats(shared_ptr<Area> area)
-{
-    // page 0
-    
-    // page 1
-    TextClass is_Vector(32, Vector2f(10, 300), Color::Black, *area, sf::String(L"Вектор:"));
-    Checkbox is_Vector_check(Vector2f(32, 32), Vector2f(122, 307), *area, []() { ChB_vector_line(); });
-}
+vector<shared_ptr<Checkbox>> checkboxes;
+vector<shared_ptr<TextClass>> texts;
+shared_ptr<Area> current_page;
+short current_page_num = 3;
 
 void ChB_vector_line()
 {
     cout << 1 << endl;
 }
 
-void PageUpdate(TextClass& text, shared_ptr<Sprite>& image, shared_ptr<Area> areaFig_ptr)
+void CreatePageStats()
 {
+    //areas
+    for (auto id : id_an_name[0])
+    {
+        auto new_page = make_shared<Area>(Vector2f(300, 300), Vector2f(5, 5), Vector2f(0, 295), Color(0, 0, 0), Color(128, 128, 128));
+        pages.push_back(new_page);
+    }
 
-    text.ChangeText(id_an_name[1][fig_page]);
-    image->setTexture(texture[fig_page]);
+    //page 0
+
+    //page 1
+
+    auto is_Vector = make_shared<TextClass>(
+        32, Vector2f(10, 300), Color::Black,
+        *(pages[1]), sf::String(L"Вектор:")
+    );
+    texts.push_back(is_Vector);
+
+    auto is_Vector_check = make_shared<Checkbox>(
+        Vector2f(32, 32), Vector2f(122, 307),
+        *(pages[1]), 
+        []() { ChB_vector_line(); }
+    );
+    checkboxes.push_back(is_Vector_check);
+
+
+    //end logic
+    current_page = pages[current_page_num];    //cube
+}
+
+void PageUpdate(TextClass& text, shared_ptr<Sprite>& image, shared_ptr<Area>& areaFig_ptr, shared_ptr<Area>& current_page, shared_ptr<Area>& areaSh_ptr)
+{
+    // 1 part
+    text.ChangeText(id_an_name[1][current_page_num]);
+    image->setTexture(texture[current_page_num]);
 
     text.text_ptr->setPosition(140 - (text.text_ptr->getGlobalBounds().width / 2),
         text.text_ptr->getPosition().y);    // Нужно ограничить размер sin или cos (уменьшить шрифт по типу 150*sin(font))
 
-    //if (fig_page == 1)  //just temp / CHECKBOX CLASS
-    //{
-    //    if (!check_sprite_ptr)
-    //    {
-    //        check_frame_ptr = make_shared<Sprite>();
-    //        check_frame_ptr->setPosition(Vector2f(215, 200));
-    //        check_frame_ptr->setScale(Vector2f(120, 120));
-    //        check_frame_ptr->setColor(sf::Color::Black);
-    //        areaFig_ptr->shapesArray.push_back(check_frame_ptr);
-
-    //        check_button_ptr = make_shared<Button>(Vector2f(110, 110), Vector2f(215, 200), sf::Color::White, *areaFig_ptr,
-    //            []() { ChB_vector_line(); });
-
-    //        check_sprite_ptr = make_shared<sf::Sprite>(check);
-    //        check_sprite_ptr->setPosition(Vector2f(215, 200));
-    //        areaFig_ptr->shapesArray.push_back(check_sprite_ptr);
-    //    }
-    //}
-    //else
-    //{
-    //    if (check_sprite_ptr)
-    //    {
-    //        areaFig_ptr->shapesArray.erase(remove(areaFig_ptr->shapesArray.begin(),
-    //            areaFig_ptr->shapesArray.end(),
-    //            check_sprite_ptr), areaFig_ptr->shapesArray.end());
-
-    //        check_sprite_ptr.reset();
-    //    }
-    //    if (check_frame_ptr)
-    //    {
-    //        areaFig_ptr->shapesArray.erase(remove(areaFig_ptr->shapesArray.begin(),
-    //            areaFig_ptr->shapesArray.end(), check_frame_ptr),
-    //            areaFig_ptr->shapesArray.end());
-
-    //        check_frame_ptr.reset();
-    //    }
-    //}
 
 
+    // update areas
+    Area::areaArray.clear();
+    Area::areaArray.push_back(areaFig_ptr);
+    Area::areaArray.push_back(current_page);
+    Area::areaArray.push_back(areaSh_ptr);
+
+    current_page = pages[current_page_num];
+    Area::areaArray.push_back(current_page);
 }
 
 int main()
 {
     OBJ_START(window, WINDOW_WIDTH, WINDOW_HEIGHT);
     UI_START();
+    CreatePageStats();
 
     
     // 1 Area
@@ -264,7 +261,7 @@ int main()
 
 
     shared_ptr<Sprite> figure_image = make_shared<Sprite>();
-    figure_image->setTexture(texture[fig_page]);
+    figure_image->setTexture(texture[current_page_num]);
     figure_image->setPosition(Vector2f(55, 10));
     areaFig_ptr->shapesArray.push_back(figure_image);
 
@@ -273,31 +270,32 @@ int main()
     
     Button left_arrow_B(Vector2f(50, 40), Vector2f(20, 240), Color(75, 75, 75), *areaFig_ptr,
         [&figure_name, &figure_image, &areaFig_ptr]() {
-            if (fig_page > 0) fig_page--;
-            else fig_page = id_an_name[0].size() - 1; 
-            PageUpdate(figure_name, figure_image, areaFig_ptr);
+            if (current_page_num > 0) current_page_num--;
+            else current_page_num = id_an_name[0].size() - 1; 
+            PageUpdate(figure_name, figure_image, areaFig_ptr, current_page, areaSh_ptr);
         }
     );
     TextClass left_arrow_T(50, Vector2f(25, 225), Color::Black, *areaFig_ptr, sf::String(L"←"));
     
     Button right_arrow_B(Vector2f(50, 40), Vector2f(220, 240), Color(75, 75, 75), *areaFig_ptr,
         [&figure_name, &figure_image, &areaFig_ptr]() {
-            if (fig_page < id_an_name[0].size() - 1) fig_page++;
-            else fig_page = 0;
-            PageUpdate(figure_name, figure_image, areaFig_ptr);
+            if (current_page_num < id_an_name[0].size() - 1) current_page_num++;
+            else current_page_num = 0;
+            PageUpdate(figure_name, figure_image, areaFig_ptr, current_page, areaSh_ptr);
         }
     );
     TextClass right_arrow_T(50, Vector2f(223, 225), Color::Black, *areaFig_ptr, sf::String(L"→"));
 
 
     // 2 Area
-    shared_ptr<Area> areaAdd_ptr = make_shared<Area>(Vector2f(300, 300), Vector2f(5, 5), Vector2f(0, 295), Color(0, 0, 0), Color(128, 128, 128));
-    Area::areaArray.push_back(areaAdd_ptr);
+    Area::areaArray.push_back(current_page);
+    /*shared_ptr<Area> areaAdd_ptr = make_shared<Area>(Vector2f(300, 300), Vector2f(5, 5), Vector2f(0, 295), Color(0, 0, 0), Color(128, 128, 128));
+    Area::areaArray.push_back(areaAdd_ptr);*/
     
 
 
     // 3 Area
-    shared_ptr<Area> areaSh_ptr = make_shared<Area>(Vector2f(300, 300), Vector2f(5, 5), Vector2f(0, 590), Color(0, 0, 0), Color(128, 128, 128));
+    areaSh_ptr = make_shared<Area>(Vector2f(300, 300), Vector2f(5, 5), Vector2f(0, 590), Color(0, 0, 0), Color(128, 128, 128));
     Area::areaArray.push_back(areaSh_ptr);
 
     Button CreateOBJ(Vector2f(230, 50), Vector2f(35, 610), Color(0, 100, 0), *areaSh_ptr,
