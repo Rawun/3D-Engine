@@ -16,14 +16,6 @@ extern vector<triangle> to_draw;
 
 weak_ptr<mesh> SelectedMesh;
 
-TextClass* x_val_pos_ptr = nullptr;
-TextClass* y_val_pos_ptr = nullptr;
-TextClass* z_val_pos_ptr = nullptr;
-
-TextClass* x_val_scale_ptr = nullptr;
-TextClass* y_val_scale_ptr = nullptr;
-TextClass* z_val_scale_ptr = nullptr;
-
 
 vector<vector<sf::String>> id_an_name =
 {
@@ -36,14 +28,6 @@ shared_ptr<Area> areaSh_ptr;
 vector<Texture> texture;
 Font font;
 Texture mark;
-
-
-//============================================================
-void ProgramEnd()
-{
-    
-}
-//============================================================
 
 
 bool PointInTriangle(Vector2f A, Vector2f B, Vector2f C, Vector2i P)
@@ -118,35 +102,55 @@ float dot(const sf::Vector2f& a, const sf::Vector2f& b)     // Скалярно�
 
 
 
-void CreateObject()
+void CreateObject(
+    shared_ptr<TextClass> x_pos_ptr, shared_ptr<TextClass> y_pos_ptr, shared_ptr<TextClass> z_pos_ptr,
+    shared_ptr<TextClass> x_scale_ptr, shared_ptr<TextClass> y_scale_ptr, shared_ptr<TextClass> z_scale_ptr,
+    short create_obj_num
+    )
 {
-    //if (String_is_Int(x_val_pos_ptr->drawing_text) && 
-    //    String_is_Int(y_val_pos_ptr->drawing_text) && 
-    //    String_is_Int(z_val_pos_ptr->drawing_text) &&
-    //    String_is_Int(x_val_scale_ptr->drawing_text) &&
-    //    String_is_Int(y_val_scale_ptr->drawing_text) &&
-    //    String_is_Int(z_val_scale_ptr->drawing_text))
-    //{
-    //    //pos
-    //    std::replace(x_val_pos_ptr->drawing_text.begin(), x_val_pos_ptr->drawing_text.end(), '.', ',');
-    //    std::replace(y_val_pos_ptr->drawing_text.begin(), y_val_pos_ptr->drawing_text.end(), '.', ',');
-    //    std::replace(z_val_pos_ptr->drawing_text.begin(), z_val_pos_ptr->drawing_text.end(), '.', ',');
-    //    //scale
-    //    std::replace(x_val_scale_ptr->drawing_text.begin(), x_val_scale_ptr->drawing_text.end(), '.', ',');
-    //    std::replace(y_val_scale_ptr->drawing_text.begin(), y_val_scale_ptr->drawing_text.end(), '.', ',');
-    //    std::replace(z_val_scale_ptr->drawing_text.begin(), z_val_scale_ptr->drawing_text.end(), '.', ',');
+    if (String_is_Int(x_pos_ptr->drawing_text) &&
+        String_is_Int(y_pos_ptr->drawing_text) &&
+        String_is_Int(z_pos_ptr->drawing_text) &&
+        String_is_Int(x_scale_ptr->drawing_text) &&
+        String_is_Int(y_scale_ptr->drawing_text) &&
+        String_is_Int(z_scale_ptr->drawing_text))
+    {
+        //pos
+        std::replace(x_pos_ptr->drawing_text.begin(), x_pos_ptr->drawing_text.end(), '.', ',');
+        std::replace(y_pos_ptr->drawing_text.begin(), y_pos_ptr->drawing_text.end(), '.', ',');
+        std::replace(z_pos_ptr->drawing_text.begin(), z_pos_ptr->drawing_text.end(), '.', ',');
+        //scale
+        std::replace(x_scale_ptr->drawing_text.begin(), x_scale_ptr->drawing_text.end(), '.', ',');
+        std::replace(y_scale_ptr->drawing_text.begin(), y_scale_ptr->drawing_text.end(), '.', ',');
+        std::replace(z_scale_ptr->drawing_text.begin(), z_scale_ptr->drawing_text.end(), '.', ',');
 
-    //    auto m = mesh::create(vec3(
-    //        std::stod(x_val_pos_ptr->drawing_text.toAnsiString()),
-    //        std::stod(y_val_pos_ptr->drawing_text.toAnsiString()),
-    //        std::stod(z_val_pos_ptr->drawing_text.toAnsiString())),
-    //        vec3(
-    //            std::stod(x_val_scale_ptr->drawing_text.toAnsiString()),
-    //            std::stod(y_val_scale_ptr->drawing_text.toAnsiString()),
-    //            std::stod(z_val_scale_ptr->drawing_text.toAnsiString()))
-    //    );
-    //    m->define_as_cube();
-    //}
+        auto x_pos = std::stod(x_pos_ptr->drawing_text.toAnsiString());
+        auto y_pos = std::stod(y_pos_ptr->drawing_text.toAnsiString());
+        auto z_pos = std::stod(z_pos_ptr->drawing_text.toAnsiString());
+
+        auto x_scale = std::stod(x_scale_ptr->drawing_text.toAnsiString());
+        auto y_scale = std::stod(y_scale_ptr->drawing_text.toAnsiString());
+        auto z_scale = std::stod(z_scale_ptr->drawing_text.toAnsiString());
+
+        switch (create_obj_num)
+        {
+        case 0:
+            cout << 1;
+            break;
+        case 3:
+        {
+            auto m = mesh::create(
+                vec3(x_pos, y_pos, z_pos),
+                vec3(x_scale, y_scale, z_scale)
+            );
+            m->define_as_cube();
+            break;
+        }
+        default:
+            cout << "Еще не готово\n";
+            break;
+        }
+    }
 }
 
 
@@ -351,26 +355,25 @@ int main()
     //Scale
     TextClass Scale(32, Vector2f(10, 735), Color::Black, *areaSh_ptr, sf::String(L"Размер"));
     TextClass x_scale(32, Vector2f(10, 770), Color::Black, *areaSh_ptr, sf::String(L"X:"));
-    TextClass x_val_scale(32, Vector2f(40, 770), Color::Black, *areaSh_ptr, sf::String(L"1"), [](TextClass& self) { NullFunction(); });
-    x_val_scale_ptr = &x_val_scale;
+    auto x_val_scale = make_shared<TextClass>(32, Vector2f(40, 770), Color::Black, *areaSh_ptr, sf::String(L"1"), [](TextClass& self) { NullFunction(); });
+
     TextClass y_scale(32, Vector2f(10, 805), Color::Black, *areaSh_ptr, sf::String(L"Y:"));
-    TextClass y_val_scale(32, Vector2f(40, 805), Color::Black, *areaSh_ptr, sf::String(L"1"), [](TextClass& self) { NullFunction(); });
-    y_val_scale_ptr = &y_val_scale;
+    auto y_val_scale = make_shared<TextClass>(32, Vector2f(40, 805), Color::Black, *areaSh_ptr, sf::String(L"1"), [](TextClass& self) { NullFunction(); });
+    
     TextClass z_scale(32, Vector2f(10, 840), Color::Black, *areaSh_ptr, sf::String(L"Z:"));
-    TextClass z_val_scale(32, Vector2f(40, 840), Color::Black, *areaSh_ptr, sf::String(L"1"), [](TextClass& self) { NullFunction(); });
-    z_val_scale_ptr = &z_val_scale;
+    auto z_val_scale = make_shared<TextClass>(32, Vector2f(40, 840), Color::Black, *areaSh_ptr, sf::String(L"1"), [](TextClass& self) { NullFunction(); });
+
 
     //Position
     TextClass Pos(32, Vector2f(150, 735), Color::Black, *areaSh_ptr, sf::String(L"Позиция"));
     TextClass x_pos(32, Vector2f(150, 770), Color::Black, *areaSh_ptr, sf::String(L"X:"));
-    TextClass x_val_pos(32, Vector2f(180, 770), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { NullFunction(); });
-    x_val_pos_ptr = &x_val_pos;
+    auto x_val_pos_ptr = make_shared<TextClass>(32, Vector2f(180, 770), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { NullFunction(); });
+
     TextClass y_pos(32, Vector2f(150, 805), Color::Black, *areaSh_ptr, sf::String(L"Y:"));
-    TextClass y_val_pos(32, Vector2f(180, 805), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { NullFunction(); });
-    y_val_pos_ptr = &y_val_pos;
+    auto y_val_pos = make_shared<TextClass>(32, Vector2f(180, 805), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { NullFunction(); });
+   
     TextClass z_pos(32, Vector2f(150, 840), Color::Black, *areaSh_ptr, sf::String(L"Z:"));
-    TextClass z_val_pos(32, Vector2f(180, 840), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { NullFunction(); });
-    z_val_pos_ptr = &z_val_pos;
+    auto z_val_pos = make_shared<TextClass>(32, Vector2f(180, 840), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { NullFunction(); });
 
     while (window.isOpen())
     {
