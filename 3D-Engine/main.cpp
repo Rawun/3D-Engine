@@ -22,6 +22,7 @@ vector<vector<sf::String>> id_an_name =
     {"point", "line", "plane", "cube", "tetraedr", "prism", "parallelepiped", "pyramid", "sphere", "cylinder", "cone"},
     {L"Точка", L"Прямая", L"Плосткость", L"Куб", L"Тетрадр", L"Призма", L"Параллелепипед", L"Пирамида", L"Шар", L"Цилиндр", L"Конус"}
 };
+vector<vector<shared_ptr<TextClass>>> page_input_data;
 
 shared_ptr<Area> areaSh_ptr;
 
@@ -102,12 +103,17 @@ float dot(const sf::Vector2f& a, const sf::Vector2f& b)     // Скалярно�
 
 
 
-void CreateObject(
-    shared_ptr<TextClass> x_pos_ptr, shared_ptr<TextClass> y_pos_ptr, shared_ptr<TextClass> z_pos_ptr,
-    shared_ptr<TextClass> x_scale_ptr, shared_ptr<TextClass> y_scale_ptr, shared_ptr<TextClass> z_scale_ptr,
-    short create_obj_num
-    )
+void CreateObject(short create_obj_num)
 {
+    shared_ptr<TextClass> x_pos_ptr = page_input_data[create_obj_num][0];
+    shared_ptr<TextClass> y_pos_ptr = page_input_data[create_obj_num][1];;
+    shared_ptr<TextClass> z_pos_ptr = page_input_data[create_obj_num][2];;
+    shared_ptr<TextClass> x_scale_ptr = page_input_data[create_obj_num][3];;
+    shared_ptr<TextClass> y_scale_ptr = page_input_data[create_obj_num][4];;
+    shared_ptr<TextClass> z_scale_ptr = page_input_data[create_obj_num][5];;
+
+    for (auto c : page_input_data[create_obj_num]) cout << c->drawing_text.toAnsiString()<<endl;
+
     if (String_is_Int(x_pos_ptr->drawing_text) &&
         String_is_Int(y_pos_ptr->drawing_text) &&
         String_is_Int(z_pos_ptr->drawing_text) &&
@@ -192,6 +198,8 @@ void ChB_vector_line()
 
 void CreatePageStats()
 {
+    page_input_data.resize(id_an_name[0].size());
+
     //areas
     for (auto id : id_an_name[0])
     {
@@ -223,17 +231,14 @@ void CreatePageStats()
     texts.push_back(A_point);
 
     auto x_pos_A = make_shared<TextClass>(32, Vector2f(10, 375), Color::Black, *(pages[1]), sf::String(L"X:"));
-    texts.push_back(x_pos_A);
     auto x_val_pos_A = make_shared<TextClass>(32, Vector2f(40, 375), Color::Black, *(pages[1]), sf::String(L"0"), [](TextClass& self) { NullFunction(); });
-    texts.push_back(x_val_pos_A);
+    page_input_data[1].push_back(x_val_pos_A);
     auto y_pos_A = make_shared<TextClass>(32, Vector2f(110, 375), Color::Black, *(pages[1]), sf::String(L"Y:"));
-    texts.push_back(y_pos_A);
     auto y_val_pos_A = make_shared<TextClass>(32, Vector2f(140, 375), Color::Black, *(pages[1]), sf::String(L"0"), [](TextClass& self) { NullFunction(); });
-    texts.push_back(y_val_pos_A);
+    page_input_data[1].push_back(y_val_pos_A);
     auto z_pos_A = make_shared<TextClass>(32, Vector2f(210, 375), Color::Black, *(pages[1]), sf::String(L"Z:"));
-    texts.push_back(z_pos_A);
     auto z_val_pos_A = make_shared<TextClass>(32, Vector2f(240, 375), Color::Black, *(pages[1]), sf::String(L"0"), [](TextClass& self) { NullFunction(); });
-    texts.push_back(z_val_pos_A);
+    page_input_data[1].push_back(z_val_pos_A);
 
 
     auto B_point = make_shared<TextClass>(
@@ -243,17 +248,48 @@ void CreatePageStats()
     texts.push_back(B_point);
 
     auto x_pos_B = make_shared<TextClass>(32, Vector2f(10, 455), Color::Black, *(pages[1]), sf::String(L"X:"));
-    texts.push_back(x_pos_B);
     auto x_val_pos_B = make_shared<TextClass>(32, Vector2f(40, 455), Color::Black, *(pages[1]), sf::String(L"0"), [](TextClass& self) { NullFunction(); });
-    texts.push_back(x_val_pos_B);
+    page_input_data[1].push_back(x_val_pos_B);
     auto y_pos_B = make_shared<TextClass>(32, Vector2f(110, 455), Color::Black, *(pages[1]), sf::String(L"Y:"));
-    texts.push_back(y_pos_B);
     auto y_val_pos_B = make_shared<TextClass>(32, Vector2f(140, 455), Color::Black, *(pages[1]), sf::String(L"0"), [](TextClass& self) { NullFunction(); });
-    texts.push_back(y_val_pos_B);
+    page_input_data[1].push_back(y_val_pos_B);
     auto z_pos_B = make_shared<TextClass>(32, Vector2f(210, 455), Color::Black, *(pages[1]), sf::String(L"Z:"));
-    texts.push_back(z_pos_B);
     auto z_val_pos_B = make_shared<TextClass>(32, Vector2f(240, 455), Color::Black, *(pages[1]), sf::String(L"0"), [](TextClass& self) { NullFunction(); });
-    texts.push_back(z_val_pos_B);
+    page_input_data[1].push_back(z_val_pos_B);
+
+    //page 3
+    auto cube_pos = make_shared<TextClass>(
+        32, Vector2f(10, 340), Color::Black,
+        *(pages[3]), sf::String(L"Позиция куба")
+    );
+    texts.push_back(cube_pos);
+
+    auto x_pos_cube = make_shared<TextClass>(32, Vector2f(10, 375), Color::Black, *(pages[3]), sf::String(L"X:"));
+    auto x_val_pos_cube = make_shared<TextClass>(32, Vector2f(40, 375), Color::Black, *(pages[3]), sf::String(L"0"), [](TextClass& self) { NullFunction(); });
+    page_input_data[3].push_back(x_val_pos_cube);
+    auto y_pos_cube = make_shared<TextClass>(32, Vector2f(110, 375), Color::Black, *(pages[3]), sf::String(L"Y:"));
+    auto y_val_pos_cube = make_shared<TextClass>(32, Vector2f(140, 375), Color::Black, *(pages[3]), sf::String(L"0"), [](TextClass& self) { NullFunction(); });
+    page_input_data[3].push_back(y_val_pos_cube);
+    auto z_pos_cube = make_shared<TextClass>(32, Vector2f(210, 375), Color::Black, *(pages[3]), sf::String(L"Z:"));
+    auto z_val_pos_cube = make_shared<TextClass>(32, Vector2f(240, 375), Color::Black, *(pages[3]), sf::String(L"0"), [](TextClass& self) { NullFunction(); });
+    page_input_data[3].push_back(z_val_pos_cube);
+
+
+    auto cube_size = make_shared<TextClass>(
+        32, Vector2f(10, 420), Color::Black,
+        *(pages[3]), sf::String(L"Размер")
+    );
+    texts.push_back(cube_size);
+
+    auto x_size_cube = make_shared<TextClass>(32, Vector2f(10, 455), Color::Black, *(pages[3]), sf::String(L"X:"));
+    auto x_val_size_cube = make_shared<TextClass>(32, Vector2f(40, 455), Color::Black, *(pages[3]), sf::String(L"0"), [](TextClass& self) { NullFunction(); });
+    page_input_data[3].push_back(x_val_size_cube);
+    auto y_size_cube = make_shared<TextClass>(32, Vector2f(110, 455), Color::Black, *(pages[3]), sf::String(L"Y:"));
+    auto y_val_size_cube = make_shared<TextClass>(32, Vector2f(140, 455), Color::Black, *(pages[3]), sf::String(L"0"), [](TextClass& self) { NullFunction(); });
+    page_input_data[3].push_back(y_val_size_cube);
+    auto z_size_cube = make_shared<TextClass>(32, Vector2f(210, 455), Color::Black, *(pages[3]), sf::String(L"Z:"));
+    auto z_val_size_cube = make_shared<TextClass>(32, Vector2f(240, 455), Color::Black, *(pages[3]), sf::String(L"0"), [](TextClass& self) { NullFunction(); });
+    page_input_data[3].push_back(z_val_size_cube);
 
 
     //end logic
@@ -342,7 +378,7 @@ int main()
     Area::areaArray.push_back(areaSh_ptr);
 
     Button CreateOBJ(Vector2f(230, 50), Vector2f(35, 610), Color(0, 100, 0), *areaSh_ptr,
-        []() { CreateObject(); },
+        []() { CreateObject(current_page_num); },
         sf::String(L"Создать объект"), 25, Color::Black
     );
 
@@ -352,29 +388,7 @@ int main()
         sf::String(L"Удалить объект"), 25, Color::Black
     );
 
-    //Scale
-    TextClass Scale(32, Vector2f(10, 735), Color::Black, *areaSh_ptr, sf::String(L"Размер"));
-    TextClass x_scale(32, Vector2f(10, 770), Color::Black, *areaSh_ptr, sf::String(L"X:"));
-    auto x_val_scale = make_shared<TextClass>(32, Vector2f(40, 770), Color::Black, *areaSh_ptr, sf::String(L"1"), [](TextClass& self) { NullFunction(); });
-
-    TextClass y_scale(32, Vector2f(10, 805), Color::Black, *areaSh_ptr, sf::String(L"Y:"));
-    auto y_val_scale = make_shared<TextClass>(32, Vector2f(40, 805), Color::Black, *areaSh_ptr, sf::String(L"1"), [](TextClass& self) { NullFunction(); });
     
-    TextClass z_scale(32, Vector2f(10, 840), Color::Black, *areaSh_ptr, sf::String(L"Z:"));
-    auto z_val_scale = make_shared<TextClass>(32, Vector2f(40, 840), Color::Black, *areaSh_ptr, sf::String(L"1"), [](TextClass& self) { NullFunction(); });
-
-
-    //Position
-    TextClass Pos(32, Vector2f(150, 735), Color::Black, *areaSh_ptr, sf::String(L"Позиция"));
-    TextClass x_pos(32, Vector2f(150, 770), Color::Black, *areaSh_ptr, sf::String(L"X:"));
-    auto x_val_pos_ptr = make_shared<TextClass>(32, Vector2f(180, 770), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { NullFunction(); });
-
-    TextClass y_pos(32, Vector2f(150, 805), Color::Black, *areaSh_ptr, sf::String(L"Y:"));
-    auto y_val_pos = make_shared<TextClass>(32, Vector2f(180, 805), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { NullFunction(); });
-   
-    TextClass z_pos(32, Vector2f(150, 840), Color::Black, *areaSh_ptr, sf::String(L"Z:"));
-    auto z_val_pos = make_shared<TextClass>(32, Vector2f(180, 840), Color::Black, *areaSh_ptr, sf::String(L"0"), [](TextClass& self) { NullFunction(); });
-
     while (window.isOpen())
     {
         window.clear(Color::White);
@@ -385,6 +399,4 @@ int main()
 
         window.display();
     }
-
-    ProgramEnd();
 }

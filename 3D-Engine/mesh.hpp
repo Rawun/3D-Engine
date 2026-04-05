@@ -121,6 +121,10 @@ public:
     //        t.owner = shared_from_this();;     // Задавание каждому треугольнику владельца "mesh"
     //    }
     //}
+    void define_as_line()
+    {
+        std::cout << "line" << std::endl;
+    }
 
     void define_as_cube()
     {
