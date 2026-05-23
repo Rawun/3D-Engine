@@ -121,8 +121,29 @@ public:
     //        t.owner = shared_from_this();;     // Задавание каждому треугольнику владельца "mesh"
     //    }
     //}
+    void Add_offset()
+    {
+        for (int i = 0; i < this->tris.size(); i++)  // *Scale -> +OffSet
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                this->tris[i].p[j] = this->tris[i].p[j] * scale;
+                this->tris[i].p[j] = this->tris[i].p[j] + offset;
+            }
+        }
+        for (auto& t : tris)
+        {
+            t.owner = shared_from_this();;     // Задавание каждому треугольнику владельца "mesh"
+        }
+    }
+
+
+
     void define_as_line()
     {
+        this->tris = {
+            triangle{ vec3(0.0f, 0.0f, 0.0f),    vec3(0.0f, 0.0f, 0.0f),    vec3(1.0f, 0.0f, 0.0f) }
+        };
         std::cout << "line" << std::endl;
     }
 
@@ -149,19 +170,7 @@ public:
             triangle(vec3(1.0f, 0.0f, 1.0f),    vec3(0.0f, 0.0f, 1.0f),    vec3(0.0f, 0.0f, 0.0f)),
             triangle(vec3(1.0f, 0.0f, 1.0f),    vec3(0.0f, 0.0f, 0.0f),    vec3(1.0f, 0.0f, 0.0f)),
         };
-
-        for (int i = 0; i < this->tris.size(); i++)  // *Scale -> +OffSet
-        {
-            for (int j = 0; j < 3; j++)
-            {
-                this->tris[i].p[j] = this->tris[i].p[j] * scale;
-                this->tris[i].p[j] = this->tris[i].p[j] + offset;
-            }
-        }
-        for (auto& t : tris)
-        {
-            t.owner = shared_from_this();;     // Задавание каждому треугольнику владельца "mesh"
-        }
+        Add_offset();
     }
 
 private:

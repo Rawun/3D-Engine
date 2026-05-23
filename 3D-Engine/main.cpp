@@ -140,9 +140,15 @@ void CreateObject(short create_obj_num)
 
         switch (create_obj_num)
         {
-        case 0:
-            cout << 1;
+        case 1:
+        {
+            auto m = mesh::create(
+                vec3(x_pos, y_pos, z_pos),
+                vec3(x_scale, y_scale, z_scale)
+            );
+            m->define_as_line();
             break;
+        }
         case 3:
         {
             auto m = mesh::create(
@@ -201,7 +207,18 @@ void CreatePageStats()
     page_input_data.resize(id_an_name[0].size());
 
     //areas
-    for (auto id : id_an_name[0])
+    auto new_page0 = make_shared<Area>(Vector2f(300, 300), Vector2f(5, 5), Vector2f(0, 295), Color(0, 0, 0), Color(128, 128, 128));
+    pages.push_back(new_page0);
+    
+    auto new_page1 = make_shared<Area>(Vector2f(100, 300), Vector2f(5, 5), Vector2f(100, 295), Color(0, 0, 0), Color(128, 128, 128));
+    pages.push_back(new_page1);
+
+    auto new_page2 = make_shared<Area>(Vector2f(300, 300), Vector2f(5, 5), Vector2f(0, 295), Color(0, 0, 0), Color(128, 128, 128));
+    pages.push_back(new_page2);
+
+    auto new_page3 = make_shared<Area>(Vector2f(300, 300), Vector2f(5, 5), Vector2f(0, 295), Color(0, 0, 0), Color(128, 128, 128));
+    pages.push_back(new_page3);
+    for (int i = 4; i < id_an_name[0].size(); i++)
     {
         auto new_page = make_shared<Area>(Vector2f(300, 300), Vector2f(5, 5), Vector2f(0, 295), Color(0, 0, 0), Color(128, 128, 128));
         pages.push_back(new_page);
@@ -230,8 +247,9 @@ void CreatePageStats()
     );
     texts.push_back(A_point);
 
+
     auto x_pos_A = make_shared<TextClass>(32, Vector2f(10, 375), Color::Black, *(pages[1]), sf::String(L"X:"));
-    auto x_val_pos_A = make_shared<TextClass>(32, Vector2f(40, 375), Color::Black, *(pages[1]), sf::String(L"0"), [](TextClass& self) { NullFunction(); });
+    auto x_val_pos_A = make_shared<TextClass>(32, Vector2f(400, 375), Color::Black, *(pages[1]), sf::String(L"0"), [](TextClass& self) { NullFunction(); });
     page_input_data[1].push_back(x_val_pos_A);
     auto y_pos_A = make_shared<TextClass>(32, Vector2f(110, 375), Color::Black, *(pages[1]), sf::String(L"Y:"));
     auto y_val_pos_A = make_shared<TextClass>(32, Vector2f(140, 375), Color::Black, *(pages[1]), sf::String(L"0"), [](TextClass& self) { NullFunction(); });
@@ -293,7 +311,7 @@ void CreatePageStats()
 
 
     //end logic
-    current_page = pages[current_page_num];    //cube
+    current_page = pages[current_page_num];    //started page
 }
 
 void PageUpdate(TextClass& text, shared_ptr<Sprite>& image, shared_ptr<Area>& areaFig_ptr, shared_ptr<Area>& current_page, shared_ptr<Area>& areaSh_ptr)
@@ -310,9 +328,8 @@ void PageUpdate(TextClass& text, shared_ptr<Sprite>& image, shared_ptr<Area>& ar
     // update areas
     Area::areaArray.clear();
     Area::areaArray.push_back(areaFig_ptr);
-    Area::areaArray.push_back(current_page);
     Area::areaArray.push_back(areaSh_ptr);
-
+    // ВНИМАНИЕ СОЗДАЕТСЯ 2 СТРАНИЦЫ С КУБОМ И ЛИНИЕЙ, ПОФИКСИТЬ
     current_page = pages[current_page_num];
     Area::areaArray.push_back(current_page);
 }

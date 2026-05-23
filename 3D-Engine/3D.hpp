@@ -254,8 +254,6 @@ int OBJ_render(RenderWindow& window, const int WINDOW_WIDTH, const int WINDOW_HE
                     float y = (T.p[j % 3].y + 1) * window.getSize().y / 2;
                     outline[j].color = sf::Color::Black;
                     outline[j].position = sf::Vector2f(x, y);
-                    //h
-                    //screenTrianD.push_back(Vector2f(x, y));
                 }
 
                 float x = (T.p[3 % 3].x + 1) * window.getSize().x / 2;

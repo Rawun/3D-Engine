@@ -547,6 +547,10 @@ int UI_START()
 
 bool UI_MousePressed() 
 {
+    for (auto am : aimed)
+        am->Pressed();
+
+
     editing_text = nullptr;
 
     if (editing_textClass)
@@ -554,11 +558,6 @@ bool UI_MousePressed()
         if(editing_textClass->DoneEditing)
             editing_textClass->DoneEditing(*editing_textClass);
         editing_textClass = nullptr;
-    }
-    if(!aimed.empty())
-    {
-        for (auto am : aimed)
-            am->Pressed();
     }
     return aimed.empty();
 }
