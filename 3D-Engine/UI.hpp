@@ -11,7 +11,7 @@ using namespace sf;
 
 class Area;
 class Button;
-vector<class Pressable*> pressables;
+vector<class Pressable*> drawingPressables;
 vector<class Pressable*> aimed;
 vector<class Pressable*> on_pressed;
 extern Font font;
@@ -36,7 +36,8 @@ T min_lim(T value, T minVal)
 class Pressable
 {
 public:
-    Pressable() {}
+    Area& area;
+    Pressable(Area& area) : area(area) { area.areaPressables.push_back(this); }
     virtual void Move(RenderWindow& window) {}
     virtual void Pressed() {}
     virtual void Released() {}
@@ -56,6 +57,7 @@ public:
 
     static vector<shared_ptr<Area>> areaArray;
     vector<shared_ptr<Drawable>> shapesArray;
+    vector<class Pressable*> areaPressables;
 
     Area(Vector2f size, Vector2f borderSize,
         Vector2f pos, Color border_color, Color area_color) :
@@ -73,6 +75,11 @@ public:
         areaSh_ptr->setFillColor(area_color);
         shapesArray.push_back(areaSh_ptr);
     }
+
+    void AddPresseblesToArray()
+    {
+        for (auto* pr : areaPressables) drawingPressables.push_back(pr);
+    }
 };
 
 
@@ -87,31 +94,28 @@ public:
     Vector2f size;
     Vector2f pos;
     Color color;
-    Area& area;
     std::function<void()> onClick;
 
     // NONE TEXT
     Button(Vector2f size, Vector2f pos, Color color, Area& area, 
         std::function<void()> onClick) :
-        size(size), pos(pos), color(color), area(area), onClick(onClick)
+        Pressable(area), size(size), pos(pos), color(color), onClick(onClick)
     {
         button_ptr = make_shared<RectangleShape>(size);
         button_ptr->setPosition(Vector2f(pos));
         button_ptr->setFillColor(color);
         area.shapesArray.push_back(button_ptr);
-        pressables.push_back(this);
     }
 
     // TEXT
     Button(Vector2f size, Vector2f pos, Color color, Area& area,
         std::function<void()> onClick, sf::String str, int text_size, Color text_color) :
-        size(size), pos(pos), color(color), area(area), onClick(onClick)
+        Pressable(area), size(size), pos(pos), color(color), onClick(onClick)
     {
         button_ptr = make_shared<RectangleShape>(size);
         button_ptr->setPosition(Vector2f(pos));
         button_ptr->setFillColor(color);
         area.shapesArray.push_back(button_ptr);
-        pressables.push_back(this);
 
 
         text = make_shared<Text>();
@@ -131,10 +135,6 @@ public:
             area.shapesArray.end(), button_ptr),
             area.shapesArray.end());
 
-        pressables.erase(
-            remove(pressables.begin(), pressables.end(), this),
-            pressables.end()
-        );
 
         if (text)
         {
@@ -222,7 +222,6 @@ public:
     sf::String drawing_text;
     shared_ptr<RectangleShape> text_area_ptr;
     shared_ptr<Text> text_ptr;
-    Area& area;
     int pixel_space;
     std::function<void(TextClass&)> DoneEditing;
 
@@ -238,7 +237,7 @@ public:
 
     // NONE STYLE, NONE EDITABLE
     TextClass(int size, Vector2f pos, Color color, Area& area, sf::String str) :
-        area(area), drawing_text(str)
+        Pressable(area), drawing_text(str)
     {
         text_ptr = make_shared<Text>();
 
@@ -259,7 +258,7 @@ public:
 
     // NONE STYLE, EDITABLE
     TextClass(int size, Vector2f pos, Color color, Area& area, sf::String str, std::function<void(TextClass&)> DoneEditing) :
-        area(area), drawing_text(str), DoneEditing(DoneEditing)
+        Pressable(area), drawing_text(str), DoneEditing(DoneEditing)
     {
         text_ptr = make_shared<Text>();
 
@@ -294,7 +293,6 @@ public:
         text_area_ptr->setPosition(Vector2f(text_ptr->getPosition().x - pixel_space, text_ptr->getPosition().y + pixel_space));
         text_area_ptr->setFillColor(Color(100, 100, 100));
         area.shapesArray.push_back(text_area_ptr);
-        pressables.push_back(this);
         //End
 
         area.shapesArray.push_back(text_ptr);
@@ -302,7 +300,7 @@ public:
 
     // STYLE, NONE EDITABLE
     TextClass(int size, Vector2f pos, Color color, Area& area, sf::String str, Uint32 style) :
-        area(area), drawing_text(str)
+        Pressable(area), drawing_text(str)
     {
         text_ptr = make_shared<Text>();
 
@@ -322,7 +320,7 @@ public:
 
     // STYLE, EDITABLE
     TextClass(int size, Vector2f pos, Color color, Area& area, sf::String str, std::function<void(TextClass&)> DoneEditing, Uint32 style) :
-        area(area), drawing_text(str), DoneEditing(DoneEditing)
+        Pressable(area), drawing_text(str), DoneEditing(DoneEditing)
     {
         text_ptr = make_shared<Text>();
 
@@ -355,21 +353,11 @@ public:
         text_area_ptr->setPosition(Vector2f(text_ptr->getPosition().x - pixel_space, text_ptr->getPosition().y + pixel_space));
         text_area_ptr->setFillColor(Color(100, 100, 100));
         area.shapesArray.push_back(text_area_ptr);
-        pressables.push_back(this);
         //End
 
         area.shapesArray.push_back(text_ptr);
     }
 
-    ~TextClass()
-    {
-        pressables.erase(
-            remove(pressables.begin(), pressables.end(), this),
-            pressables.end()
-        );
-
-        // Need to add destroyer for text sprite and pressable background
-    }
 
     void Move(RenderWindow& window) override
     {
@@ -569,7 +557,7 @@ void MouseReleased()
 
 void MouseMove(RenderWindow& window) 
 {
-    for (auto pr : pressables)
+    for (auto pr : drawingPressables)
         pr->Move(window);
 }
 
@@ -592,6 +580,8 @@ int UI(RenderWindow& window)
     {
         window.draw(text_cursor);
     }
+
+    drawingPressables.clear();
 
     return 0;
 }

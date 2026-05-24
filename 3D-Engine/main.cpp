@@ -316,6 +316,9 @@ void CreatePageStats()
 
 void PageUpdate(TextClass& text, shared_ptr<Sprite>& image, shared_ptr<Area>& areaFig_ptr, shared_ptr<Area>& current_page, shared_ptr<Area>& areaSh_ptr)
 {
+    editing_text = nullptr;
+    editing_textClass = nullptr;
+
     // 1 part
     text.ChangeText(id_an_name[1][current_page_num]);
     image->setTexture(texture[current_page_num]);
@@ -329,7 +332,6 @@ void PageUpdate(TextClass& text, shared_ptr<Sprite>& image, shared_ptr<Area>& ar
     Area::areaArray.clear();
     Area::areaArray.push_back(areaFig_ptr);
     Area::areaArray.push_back(areaSh_ptr);
-    // ВНИМАНИЕ СОЗДАЕТСЯ 2 СТРАНИЦЫ С КУБОМ И ЛИНИЕЙ, ПОФИКСИТЬ
     current_page = pages[current_page_num];
     Area::areaArray.push_back(current_page);
 }
