@@ -33,17 +33,6 @@ T min_lim(T value, T minVal)
 }
 
 
-class Pressable
-{
-public:
-    Area& area;
-    Pressable(Area& area) : area(area) { area.areaPressables.push_back(this); }
-    virtual void Move(RenderWindow& window) {}
-    virtual void Pressed() {}
-    virtual void Released() {}
-};
-
-
 
 //=============================================================================================
 class Area
@@ -84,7 +73,20 @@ public:
 
 
 
+
 //=============================================================================================
+class Pressable
+{
+public:
+    Area& area;
+    Pressable(Area& area) : area(area) { area.areaPressables.push_back(this); }
+    virtual void Move(RenderWindow& window) {}
+    virtual void Pressed() {}
+    virtual void Released() {}
+};
+
+
+
 class Button : public Pressable
 {
 public:
@@ -146,6 +148,7 @@ public:
 
     void Move(RenderWindow& window) override
     {
+        cout << "button\n";
         if (button_ptr->getGlobalBounds().contains((Vector2f)Mouse::getPosition(window)))
         {
             if (!single_aim)
@@ -208,7 +211,7 @@ public:
 
 
 
-//=============================================================================================
+
 class TextClass;
 
 shared_ptr<Text> editing_text;
@@ -361,6 +364,7 @@ public:
 
     void Move(RenderWindow& window) override
     {
+        cout << "text\n";
         if (text_area_ptr->getGlobalBounds().contains((Vector2f)Mouse::getPosition(window)))
         {
             if (!single_aim)
@@ -447,6 +451,7 @@ public:
         text_ptr->setString(drawing_text);
     }
 };
+//=====================================================================================================
 
 
 class Checkbox
@@ -571,10 +576,15 @@ int UI(RenderWindow& window)
 
     //Рисование интерфейса
     for (auto& ares : Area::areaArray)
+    {
+        ares->AddPresseblesToArray();
+        drawingPressables[0]->Move(window);
+
         for (auto& shps : ares->shapesArray)
         {
             window.draw(*shps);
         }
+    }
 
     if (cursor_visible && editing_text != nullptr)  // Obazatelno v konse
     {
