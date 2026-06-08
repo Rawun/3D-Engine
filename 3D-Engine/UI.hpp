@@ -11,7 +11,7 @@ using namespace sf;
 
 class Area;
 class Button;
-vector<class Pressable*> drawingPressables;
+vector<class Pressable*> drawingPressables; //shared_ptr drawingPressables aimed on_pressed areaPressables
 vector<class Pressable*> aimed;
 vector<class Pressable*> on_pressed;
 extern Font font;
@@ -83,6 +83,45 @@ public:
     virtual void Move(RenderWindow& window) {}
     virtual void Pressed() {}
     virtual void Released() {}
+
+    /*virtual ~Pressable()
+    {
+        area.areaPressables.erase(
+            remove(
+                area.areaPressables.begin(),
+                area.areaPressables.end(),
+                this
+            ),
+            area.areaPressables.end()
+        );
+
+        drawingPressables.erase(
+            remove(
+                drawingPressables.begin(),
+                drawingPressables.end(),
+                this
+            ),
+            drawingPressables.end()
+        );
+
+        aimed.erase(
+            remove(
+                aimed.begin(),
+                aimed.end(),
+                this
+            ),
+            aimed.end()
+        );
+
+        on_pressed.erase(
+            remove(
+                on_pressed.begin(),
+                on_pressed.end(),
+                this
+            ),
+            on_pressed.end()
+        );
+    }*/
 };
 
 
@@ -148,7 +187,6 @@ public:
 
     void Move(RenderWindow& window) override
     {
-        cout << "button\n";
         if (button_ptr->getGlobalBounds().contains((Vector2f)Mouse::getPosition(window)))
         {
             if (!single_aim)
@@ -361,10 +399,34 @@ public:
         area.shapesArray.push_back(text_ptr);
     }
 
+    ~TextClass()
+    {
+        if (text_ptr)
+        {
+            area.shapesArray.erase(
+                remove(area.shapesArray.begin(),
+                    area.shapesArray.end(),
+                    text_ptr),
+                area.shapesArray.end()
+            );
+        }
+
+        if (text_area_ptr)
+        {
+            area.shapesArray.erase(
+                remove(area.shapesArray.begin(),
+                    area.shapesArray.end(),
+                    text_area_ptr),
+                area.shapesArray.end()
+            );
+        }
+    }
+
 
     void Move(RenderWindow& window) override
     {
-        cout << "text\n";
+        if (!text_area_ptr)
+            return;
         if (text_area_ptr->getGlobalBounds().contains((Vector2f)Mouse::getPosition(window)))
         {
             if (!single_aim)
@@ -538,20 +600,14 @@ int UI_START()
 }
 
 
-bool UI_MousePressed() 
+bool UI_MousePressed()
 {
+    editing_text = nullptr;
+    editing_textClass = nullptr;
+
     for (auto am : aimed)
         am->Pressed();
 
-
-    editing_text = nullptr;
-
-    if (editing_textClass)
-    {
-        if(editing_textClass->DoneEditing)
-            editing_textClass->DoneEditing(*editing_textClass);
-        editing_textClass = nullptr;
-    }
     return aimed.empty();
 }
 void MouseReleased() 
@@ -577,9 +633,6 @@ int UI(RenderWindow& window)
     //Рисование интерфейса
     for (auto& ares : Area::areaArray)
     {
-        ares->AddPresseblesToArray();
-        drawingPressables[0]->Move(window);
-
         for (auto& shps : ares->shapesArray)
         {
             window.draw(*shps);
@@ -590,8 +643,6 @@ int UI(RenderWindow& window)
     {
         window.draw(text_cursor);
     }
-
-    drawingPressables.clear();
 
     return 0;
 }

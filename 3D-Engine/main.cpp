@@ -247,7 +247,7 @@ void CreatePageStats()
     );
     texts.push_back(A_point);
 
-
+    //contain ALL TEXTCLASS
     auto x_pos_A = make_shared<TextClass>(32, Vector2f(10, 375), Color::Black, *(pages[1]), sf::String(L"X:"));
     auto x_val_pos_A = make_shared<TextClass>(32, Vector2f(400, 375), Color::Black, *(pages[1]), sf::String(L"0"), [](TextClass& self) { NullFunction(); });
     page_input_data[1].push_back(x_val_pos_A);
@@ -309,7 +309,7 @@ void CreatePageStats()
     auto z_val_size_cube = make_shared<TextClass>(32, Vector2f(240, 455), Color::Black, *(pages[3]), sf::String(L"0"), [](TextClass& self) { NullFunction(); });
     page_input_data[3].push_back(z_val_size_cube);
 
-
+    
     //end logic
     current_page = pages[current_page_num];    //started page
 }
@@ -335,6 +335,16 @@ void PageUpdate(TextClass& text, shared_ptr<Sprite>& image, shared_ptr<Area>& ar
     current_page = pages[current_page_num];
     Area::areaArray.push_back(current_page);
 }
+
+
+void UpdatePressables()
+{
+    drawingPressables.clear();
+
+    for (auto& area : Area::areaArray)
+        area->AddPresseblesToArray();
+}
+
 
 int main()
 {
@@ -411,11 +421,13 @@ int main()
     while (window.isOpen())
     {
         window.clear(Color::White);
+        UpdatePressables();
 
 
         OBJ_render(window, WINDOW_WIDTH, WINDOW_HEIGHT);
         UI(window);
 
         window.display();
+        drawingPressables.clear();
     }
 }
