@@ -420,7 +420,7 @@ public:
                 area.shapesArray.end()
             );
         }
-    }
+    }       // Udalit esli nado
 
 
     void Move(RenderWindow& window) override
