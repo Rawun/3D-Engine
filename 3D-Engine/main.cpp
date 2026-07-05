@@ -229,78 +229,78 @@ void CreatePageStats()
 
     auto is_Vector = CreateText(
         32, Vector2f(10, 300), Color::Black,
-        *(pages[1]), sf::String(L"Вектор:")
+        pages[1], sf::String(L"Вектор:")
     );
 
     auto is_Vector_check = make_shared<Checkbox>(
         Vector2f(32, 32), Vector2f(122, 307),
-        *(pages[1]), 
+        pages[1], 
         []() { ChB_vector_line(); }
     );
     checkboxes.push_back(is_Vector_check);
 
     auto A_point = CreateText(
         32, Vector2f(10, 340), Color::Black,
-        *(pages[1]), sf::String(L"Точка A(начало)")
+        pages[1], sf::String(L"Точка A(начало)")
     );
 
     
-    auto x_pos_A = CreateText(32, Vector2f(10, 375), Color::Black, *(pages[1]), sf::String(L"X:"));
-    auto x_val_pos_A = CreateText(32, Vector2f(40, 375), Color::Black, *(pages[1]), sf::String(L"0"), [](TextClass& self) { NullFunction(); });
+    auto x_pos_A = CreateText(32, Vector2f(10, 375), Color::Black, pages[1], sf::String(L"X:"));
+    auto x_val_pos_A = CreateText(32, Vector2f(40, 375), Color::Black, pages[1], sf::String(L"0"), [](TextClass& self) { NullFunction(); });
     page_input_data[1].push_back(x_val_pos_A);
-    auto y_pos_A = CreateText(32, Vector2f(110, 375), Color::Black, *(pages[1]), sf::String(L"Y:"));
-    auto y_val_pos_A = CreateText(32, Vector2f(140, 375), Color::Black, *(pages[1]), sf::String(L"0"), [](TextClass& self) { NullFunction(); });
+    auto y_pos_A = CreateText(32, Vector2f(110, 375), Color::Black, pages[1], sf::String(L"Y:"));
+    auto y_val_pos_A = CreateText(32, Vector2f(140, 375), Color::Black, pages[1], sf::String(L"0"), [](TextClass& self) { NullFunction(); });
     page_input_data[1].push_back(y_val_pos_A);
-    auto z_pos_A = CreateText(32, Vector2f(210, 375), Color::Black, *(pages[1]), sf::String(L"Z:"));
-    auto z_val_pos_A = CreateText(32, Vector2f(240, 375), Color::Black, *(pages[1]), sf::String(L"0"), [](TextClass& self) { NullFunction(); });
+    auto z_pos_A = CreateText(32, Vector2f(210, 375), Color::Black, pages[1], sf::String(L"Z:"));
+    auto z_val_pos_A = CreateText(32, Vector2f(240, 375), Color::Black, pages[1], sf::String(L"0"), [](TextClass& self) { NullFunction(); });
     page_input_data[1].push_back(z_val_pos_A);
 
 
     auto B_point = CreateText(
         32, Vector2f(10, 420), Color::Black,
-        *(pages[1]), sf::String(L"Точка B(конец)")
+        pages[1], sf::String(L"Точка B(конец)")
     );
 
-    auto x_pos_B = CreateText(32, Vector2f(10, 455), Color::Black, *(pages[1]), sf::String(L"X:"));
-    auto x_val_pos_B = CreateText(32, Vector2f(40, 455), Color::Black, *(pages[1]), sf::String(L"0"), [](TextClass& self) { NullFunction(); });
+    auto x_pos_B = CreateText(32, Vector2f(10, 455), Color::Black, pages[1], sf::String(L"X:"));
+    auto x_val_pos_B = CreateText(32, Vector2f(40, 455), Color::Black, pages[1], sf::String(L"0"), [](TextClass& self) { NullFunction(); });
     page_input_data[1].push_back(x_val_pos_B);
-    auto y_pos_B = CreateText(32, Vector2f(110, 455), Color::Black, *(pages[1]), sf::String(L"Y:"));
-    auto y_val_pos_B = CreateText(32, Vector2f(140, 455), Color::Black, *(pages[1]), sf::String(L"0"), [](TextClass& self) { NullFunction(); });
+    auto y_pos_B = CreateText(32, Vector2f(110, 455), Color::Black, pages[1], sf::String(L"Y:"));
+    auto y_val_pos_B = CreateText(32, Vector2f(140, 455), Color::Black, pages[1], sf::String(L"0"), [](TextClass& self) { NullFunction(); });
     page_input_data[1].push_back(y_val_pos_B);
-    auto z_pos_B = CreateText(32, Vector2f(210, 455), Color::Black, *(pages[1]), sf::String(L"Z:"));
-    auto z_val_pos_B = CreateText(32, Vector2f(240, 455), Color::Black, *(pages[1]), sf::String(L"0"), [](TextClass& self) { NullFunction(); });
+    auto z_pos_B = CreateText(32, Vector2f(210, 455), Color::Black, pages[1], sf::String(L"Z:"));
+    auto z_val_pos_B = CreateText(32, Vector2f(240, 455), Color::Black, pages[1], sf::String(L"0"), [](TextClass& self) { NullFunction(); });
     page_input_data[1].push_back(z_val_pos_B);
 
     //page 3
     auto cube_pos = CreateText(
         32, Vector2f(10, 340), Color::Black,
-        *(pages[3]), sf::String(L"Позиция куба")
+        pages[3], sf::String(L"Позиция куба")
     );
 
-    auto x_pos_cube = CreateText(32, Vector2f(10, 375), Color::Black, *(pages[3]), sf::String(L"X:"));
-    auto x_val_pos_cube = CreateText(32, Vector2f(40, 375), Color::Black, *(pages[3]), sf::String(L"0"), [](TextClass& self) { NullFunction(); });
+    auto x_pos_cube = CreateText(32, Vector2f(10, 375), Color::Black, pages[3], sf::String(L"X:"));
+    auto x_val_pos_cube = CreateText(32, Vector2f(40, 375), Color::Black, pages[3], sf::String(L"0"), [](TextClass& self) { NullFunction(); });
     page_input_data[3].push_back(x_val_pos_cube);
-    auto y_pos_cube = CreateText(32, Vector2f(110, 375), Color::Black, *(pages[3]), sf::String(L"Y:"));
-    auto y_val_pos_cube = CreateText(32, Vector2f(140, 375), Color::Black, *(pages[3]), sf::String(L"0"), [](TextClass& self) { NullFunction(); });
+    auto y_pos_cube = CreateText(32, Vector2f(110, 375), Color::Black, pages[3], sf::String(L"Y:"));
+    auto y_val_pos_cube = CreateText(32, Vector2f(140, 375), Color::Black, pages[3], sf::String(L"0"), [](TextClass& self) { NullFunction(); });
     page_input_data[3].push_back(y_val_pos_cube);
-    auto z_pos_cube = CreateText(32, Vector2f(210, 375), Color::Black, *(pages[3]), sf::String(L"Z:"));
-    auto z_val_pos_cube = CreateText(32, Vector2f(240, 375), Color::Black, *(pages[3]), sf::String(L"0"), [](TextClass& self) { NullFunction(); });
+    auto z_pos_cube = CreateText(32, Vector2f(210, 375), Color::Black, pages[3], sf::String(L"Z:"));
+    auto z_val_pos_cube = CreateText(32, Vector2f(240, 375), Color::Black, pages[3], sf::String(L"0"), [](TextClass& self) { NullFunction(); });
     page_input_data[3].push_back(z_val_pos_cube);
 
 
     auto cube_size = CreateText(
         32, Vector2f(10, 420), Color::Black,
-        *(pages[3]), sf::String(L"Размер")
+        pages[3], sf::String(L"Размер")
     );
 
-    auto x_size_cube = CreateText(32, Vector2f(10, 455), Color::Black, *(pages[3]), sf::String(L"X:"));
-    auto x_val_size_cube = CreateText(32, Vector2f(40, 455), Color::Black, *(pages[3]), sf::String(L"0"), [](TextClass& self) { NullFunction(); });
+    auto x_size_cube = CreateText(32, Vector2f(10, 455), Color::Black, pages[3], sf::String(L"X:"));
+    auto x_val_size_cube = CreateText(32, Vector2f(40, 455), Color::Black, pages[3], sf::String(L"0"), [](TextClass& self) { NullFunction(); });
     page_input_data[3].push_back(x_val_size_cube);
-    auto y_size_cube = CreateText(32, Vector2f(110, 455), Color::Black, *(pages[3]), sf::String(L"Y:"));
-    auto y_val_size_cube = CreateText(32, Vector2f(140, 455), Color::Black, *(pages[3]), sf::String(L"0"), [](TextClass& self) { NullFunction(); });
+    auto y_size_cube = CreateText(32, Vector2f(110, 455), Color::Black, pages[3], sf::String(L"Y:"));
+    auto y_val_size_cube = CreateText(32, Vector2f(140, 455), Color::Black, pages[3], sf::String(L"0"), [](TextClass& self) { NullFunction(); });
     page_input_data[3].push_back(y_val_size_cube);
-    auto z_size_cube = CreateText(32, Vector2f(210, 455), Color::Black, *(pages[3]), sf::String(L"Z:"));
-    auto z_val_size_cube = CreateText(32, Vector2f(240, 455), Color::Black, *(pages[3]), sf::String(L"0"), [](TextClass& self) { NullFunction(); });
+    auto z_size_cube = CreateText(32, Vector2f(210, 455), Color::Black, pages[3], sf::String(L"Z:"));
+    auto z_val_size_cube = CreateText(32, Vector2f(240, 455), Color::Black, pages[3], sf::String(L"0"), [](TextClass& self) { NullFunction(); });
     page_input_data[3].push_back(z_val_size_cube);
 
     
@@ -339,6 +339,12 @@ void UpdatePressables()
         area->AddPresseblesToArray();
 }
 
+void DestroyUI()
+{
+    page_input_data.clear();
+    pages.clear();
+}
+
 
 int main()
 {
@@ -368,25 +374,25 @@ int main()
     areaFig_ptr->shapesArray.push_back(figure_image);
 
 
-    TextClass figure_name(32, Vector2f(117, 240), Color::Black, *areaFig_ptr, sf::String(L"Куб"));  // -5px from x из-за учёта Area
+    TextClass figure_name(32, Vector2f(117, 240), Color::Black, areaFig_ptr, sf::String(L"Куб"));  // -5px from x из-за учёта Area
     
-    Button left_arrow_B(Vector2f(50, 40), Vector2f(20, 240), Color(75, 75, 75), *areaFig_ptr,
+    Button left_arrow_B(Vector2f(50, 40), Vector2f(20, 240), Color(75, 75, 75), areaFig_ptr,
         [&figure_name, &figure_image, &areaFig_ptr]() {
             if (current_page_num > 0) current_page_num--;
             else current_page_num = id_an_name[0].size() - 1; 
             PageUpdate(figure_name, figure_image, areaFig_ptr, current_page, areaSh_ptr);
         }
     );
-    TextClass left_arrow_T(50, Vector2f(25, 225), Color::Black, *areaFig_ptr, sf::String(L"←"));
+    TextClass left_arrow_T(50, Vector2f(25, 225), Color::Black, areaFig_ptr, sf::String(L"←"));
     
-    Button right_arrow_B(Vector2f(50, 40), Vector2f(220, 240), Color(75, 75, 75), *areaFig_ptr,
+    Button right_arrow_B(Vector2f(50, 40), Vector2f(220, 240), Color(75, 75, 75), areaFig_ptr,
         [&figure_name, &figure_image, &areaFig_ptr]() {
             if (current_page_num < id_an_name[0].size() - 1) current_page_num++;
             else current_page_num = 0;
             PageUpdate(figure_name, figure_image, areaFig_ptr, current_page, areaSh_ptr);
         }
     );
-    TextClass right_arrow_T(50, Vector2f(223, 225), Color::Black, *areaFig_ptr, sf::String(L"→"));
+    TextClass right_arrow_T(50, Vector2f(223, 225), Color::Black, areaFig_ptr, sf::String(L"→"));
 
 
     // 2 Area
@@ -400,13 +406,13 @@ int main()
     areaSh_ptr = make_shared<Area>(Vector2f(300, 300), Vector2f(5, 5), Vector2f(0, 590), Color(0, 0, 0), Color(128, 128, 128));
     Area::areaArray.push_back(areaSh_ptr);
 
-    Button CreateOBJ(Vector2f(230, 50), Vector2f(35, 610), Color(0, 100, 0), *areaSh_ptr,
+    Button CreateOBJ(Vector2f(230, 50), Vector2f(35, 610), Color(0, 100, 0), areaSh_ptr,
         []() { CreateObject(current_page_num); },
         sf::String(L"Создать объект"), 25, Color::Black
     );
 
 
-    Button DeleteOBJ(Vector2f(230, 50), Vector2f(35, 670), Color(100, 0, 0), *areaSh_ptr,
+    Button DeleteOBJ(Vector2f(230, 50), Vector2f(35, 670), Color(100, 0, 0), areaSh_ptr,
         []() { DeleteObject(); },
         sf::String(L"Удалить объект"), 25, Color::Black
     );
@@ -424,4 +430,5 @@ int main()
         window.display();
         drawingPressables.clear();
     }
+    DestroyUI();
 }

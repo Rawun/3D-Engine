@@ -35,7 +35,7 @@ T min_lim(T value, T minVal)
 
 
 //=============================================================================================
-class Area
+class Area : public enable_shared_from_this<Area>
 {
 public:
     shared_ptr<RectangleShape> borderSh_ptr;
@@ -65,6 +65,12 @@ public:
         shapesArray.push_back(areaSh_ptr);
     }
 
+    ~Area()
+    {
+        shapesArray.clear();
+        areaPressables.clear();
+    }
+
     void AddPresseblesToArray()
     {
         for (auto* pr : areaPressables) drawingPressables.push_back(pr);
@@ -78,8 +84,8 @@ public:
 class Pressable
 {
 public:
-    Area& area;
-    Pressable(Area& area) : area(area) { area.areaPressables.push_back(this); }
+    weak_ptr<Area> area;
+    Pressable(shared_ptr<Area> area) : area(area) { area->areaPressables.push_back(this); }
     virtual void Move(RenderWindow& window) {}
     virtual void Pressed() {}
     virtual void Released() {}
@@ -138,25 +144,25 @@ public:
     std::function<void()> onClick;
 
     // NONE TEXT
-    Button(Vector2f size, Vector2f pos, Color color, Area& area, 
+    Button(Vector2f size, Vector2f pos, Color color, shared_ptr<Area> area, 
         std::function<void()> onClick) :
         Pressable(area), size(size), pos(pos), color(color), onClick(onClick)
     {
         button_ptr = make_shared<RectangleShape>(size);
         button_ptr->setPosition(Vector2f(pos));
         button_ptr->setFillColor(color);
-        area.shapesArray.push_back(button_ptr);
+        area->shapesArray.push_back(button_ptr);
     }
 
     // TEXT
-    Button(Vector2f size, Vector2f pos, Color color, Area& area,
+    Button(Vector2f size, Vector2f pos, Color color, shared_ptr<Area> area,
         std::function<void()> onClick, sf::String str, int text_size, Color text_color) :
         Pressable(area), size(size), pos(pos), color(color), onClick(onClick)
     {
         button_ptr = make_shared<RectangleShape>(size);
         button_ptr->setPosition(Vector2f(pos));
         button_ptr->setFillColor(color);
-        area.shapesArray.push_back(button_ptr);
+        area->shapesArray.push_back(button_ptr);
 
 
         text = make_shared<Text>();
@@ -167,21 +173,30 @@ public:
         text->setFillColor(text_color);
         text->setPosition(pos.x + (size.x / 2) + text_size * 0.2 - text->getGlobalBounds().width / 2, pos.y + (size.y / 2) - (text_size) / 2);
 
-        area.shapesArray.push_back(text);
+        area->shapesArray.push_back(text);
     }
 
     ~Button()
     {
-        area.shapesArray.erase(remove(area.shapesArray.begin(),
-            area.shapesArray.end(), button_ptr),
-            area.shapesArray.end());
-
-
-        if (text)
+        if (auto a = area.lock())
         {
-            area.shapesArray.erase(remove(area.shapesArray.begin(),
-                area.shapesArray.end(), text),
-                area.shapesArray.end());
+            if(button_ptr)
+            {
+                a->shapesArray.erase(
+                    remove(a->shapesArray.begin(),
+                        a->shapesArray.end(),
+                        button_ptr),
+                    a->shapesArray.end());
+            }
+
+            if (text)
+            {
+                a->shapesArray.erase(
+                    remove(a->shapesArray.begin(),
+                        a->shapesArray.end(),
+                        text),
+                    a->shapesArray.end());
+            }
         }
     }
 
@@ -277,7 +292,7 @@ public:
 
 
     // NONE STYLE, NONE EDITABLE
-    TextClass(int size, Vector2f pos, Color color, Area& area, sf::String str) :
+    TextClass(int size, Vector2f pos, Color color, shared_ptr<Area> area, sf::String str) :
         Pressable(area), drawing_text(str)
     {
         text_ptr = make_shared<Text>();
@@ -294,11 +309,11 @@ public:
 
 
 
-        area.shapesArray.push_back(text_ptr);
+        area->shapesArray.push_back(text_ptr);
     }
 
     // NONE STYLE, EDITABLE
-    TextClass(int size, Vector2f pos, Color color, Area& area, sf::String str, std::function<void(TextClass&)> DoneEditing) :
+    TextClass(int size, Vector2f pos, Color color, shared_ptr<Area> area, sf::String str, std::function<void(TextClass&)> DoneEditing) :
         Pressable(area), drawing_text(str), DoneEditing(DoneEditing)
     {
         text_ptr = make_shared<Text>();
@@ -333,14 +348,14 @@ public:
 
         text_area_ptr->setPosition(Vector2f(text_ptr->getPosition().x - pixel_space, text_ptr->getPosition().y + pixel_space));
         text_area_ptr->setFillColor(Color(100, 100, 100));
-        area.shapesArray.push_back(text_area_ptr);
+        area->shapesArray.push_back(text_area_ptr);
         //End
 
-        area.shapesArray.push_back(text_ptr);
+        area->shapesArray.push_back(text_ptr);
     }
 
     // STYLE, NONE EDITABLE
-    TextClass(int size, Vector2f pos, Color color, Area& area, sf::String str, Uint32 style) :
+    TextClass(int size, Vector2f pos, Color color, shared_ptr<Area> area, sf::String str, Uint32 style) :
         Pressable(area), drawing_text(str)
     {
         text_ptr = make_shared<Text>();
@@ -355,12 +370,12 @@ public:
 
 
 
-        area.shapesArray.push_back(text_ptr);
+        area->shapesArray.push_back(text_ptr);
     }
 
 
     // STYLE, EDITABLE
-    TextClass(int size, Vector2f pos, Color color, Area& area, sf::String str, std::function<void(TextClass&)> DoneEditing, Uint32 style) :
+    TextClass(int size, Vector2f pos, Color color, shared_ptr<Area> area, sf::String str, std::function<void(TextClass&)> DoneEditing, Uint32 style) :
         Pressable(area), drawing_text(str), DoneEditing(DoneEditing)
     {
         text_ptr = make_shared<Text>();
@@ -393,34 +408,38 @@ public:
 
         text_area_ptr->setPosition(Vector2f(text_ptr->getPosition().x - pixel_space, text_ptr->getPosition().y + pixel_space));
         text_area_ptr->setFillColor(Color(100, 100, 100));
-        area.shapesArray.push_back(text_area_ptr);
+        area->shapesArray.push_back(text_area_ptr);
         //End
 
-        area.shapesArray.push_back(text_ptr);
+        area->shapesArray.push_back(text_ptr);
     }
 
     ~TextClass()
     {
-        if (text_ptr)
+        if (auto a = area.lock())
         {
-            area.shapesArray.erase(
-                remove(area.shapesArray.begin(),
-                    area.shapesArray.end(),
-                    text_ptr),
-                area.shapesArray.end()
-            );
-        }
+            cout << 1;
+            if (text_ptr)
+            {
+                a->shapesArray.erase(
+                    remove(a->shapesArray.begin(),
+                        a->shapesArray.end(),
+                        text_ptr),
+                    a->shapesArray.end());
+                cout << 2 <<endl;
+            }
 
-        if (text_area_ptr)
-        {
-            area.shapesArray.erase(
-                remove(area.shapesArray.begin(),
-                    area.shapesArray.end(),
-                    text_area_ptr),
-                area.shapesArray.end()
-            );
+            if (text_area_ptr)
+            {
+                a->shapesArray.erase(
+                    remove(a->shapesArray.begin(),
+                        a->shapesArray.end(),
+                        text_area_ptr),
+                    a->shapesArray.end());
+                cout << 3 << endl;
+            }
         }
-    }       // Udalit esli nado
+    }
 
 
     void Move(RenderWindow& window) override
@@ -525,18 +544,18 @@ public:
     shared_ptr<Sprite> mark_ptr;
     Vector2f size;
     Vector2f pos;
-    Area& area;
+    weak_ptr<Area> area;
     std::function<void()> onClick;
 
     
-    Checkbox(Vector2f size, Vector2f pos, Area& area, std::function<void()> onClick) :
+    Checkbox(Vector2f size, Vector2f pos, shared_ptr<Area> area, std::function<void()> onClick) :
         size(size), pos(pos), area(area), onClick(onClick)
     {
         frame_ptr = make_shared<RectangleShape>();
         frame_ptr->setSize(size);
         frame_ptr->setPosition(pos);
         frame_ptr->setFillColor(Color::Black);
-        area.shapesArray.push_back(frame_ptr);
+        area->shapesArray.push_back(frame_ptr);
         // Это перепроверить
         button_ptr = make_shared<Button>(
             Vector2f(size.x * 0.9, size.y * 0.9), 
@@ -555,23 +574,41 @@ public:
         );
 
         mark_ptr->setPosition(pos + Vector2f(size.x * 0.1, size.y * 0.1));
-        area.shapesArray.push_back(mark_ptr);
+        area->shapesArray.push_back(mark_ptr);
         // Это тоже
     }
 
     ~Checkbox()
     {
-        area.shapesArray.erase(remove(area.shapesArray.begin(),
-            area.shapesArray.end(), frame_ptr),
-            area.shapesArray.end());
+        if (auto a = area.lock())
+        {
+            if (frame_ptr)
+            {
+                a->shapesArray.erase(
+                    remove(a->shapesArray.begin(),
+                        a->shapesArray.end(),
+                        frame_ptr),
+                    a->shapesArray.end());
+            }
 
-        area.shapesArray.erase(remove(area.shapesArray.begin(),
-            area.shapesArray.end(), button_ptr->button_ptr),
-            area.shapesArray.end());
+            if (button_ptr->button_ptr)
+            {
+                a->shapesArray.erase(
+                    remove(a->shapesArray.begin(),
+                        a->shapesArray.end(),
+                        button_ptr->button_ptr),
+                    a->shapesArray.end());
+            }
 
-        area.shapesArray.erase(remove(area.shapesArray.begin(),
-            area.shapesArray.end(), mark_ptr),
-            area.shapesArray.end());
+            if (mark_ptr)
+            {
+                a->shapesArray.erase(
+                    remove(a->shapesArray.begin(),
+                        a->shapesArray.end(),
+                        mark_ptr),
+                    a->shapesArray.end());
+            }
+        }
     }
 };
 
