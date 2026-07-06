@@ -418,7 +418,6 @@ public:
     {
         if (auto a = area.lock())
         {
-            cout << 1;
             if (text_ptr)
             {
                 a->shapesArray.erase(
@@ -426,7 +425,6 @@ public:
                         a->shapesArray.end(),
                         text_ptr),
                     a->shapesArray.end());
-                cout << 2 <<endl;
             }
 
             if (text_area_ptr)
@@ -436,7 +434,6 @@ public:
                         a->shapesArray.end(),
                         text_area_ptr),
                     a->shapesArray.end());
-                cout << 3 << endl;
             }
         }
     }

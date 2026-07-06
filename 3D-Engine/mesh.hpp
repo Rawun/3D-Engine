@@ -87,69 +87,37 @@ struct triangle : public std::enable_shared_from_this<triangle>
 class mesh : public std::enable_shared_from_this<mesh>
 {
 public:
-    static std::vector<std::shared_ptr<mesh>> meshes;   // Массив указателей на мешы
+    virtual ~mesh() = default;
+
     std::vector<triangle> tris;
+
+    static std::vector<std::shared_ptr<mesh>> meshes;
+};
+
+class cube : public mesh    //спрятать всё не нужное под private, protected/решить проблему с look_dir >= +-1
+{
+public:
     vec3 offset;    // Смещение относительно всех треугольников
-    vec3 scale = {1, 1, 1};     // Размер фигуры
+    vec3 scale{1, 1, 1};     // Размер фигуры
 
-    static std::shared_ptr<mesh> create(vec3 offset, vec3 scale)
-    {
-        auto ptr = std::shared_ptr<mesh>(new mesh(offset, scale));
-        meshes.push_back(ptr);
-        return ptr;
-    }
 
-    //// Создание пустого меша
-    //mesh(vec3 offset) : offset(offset) { tris = {}; meshes.push_back(shared_from_this());}
-    //// Создание пустого меша c размером
-    //mesh(vec3 offset, vec3 scale) : offset(offset), scale(scale) { tris = {}; meshes.push_back(shared_from_this());}
-    //// Создание меша с готовыми полигонами
-    //mesh(vec3 offset, std::vector<triangle>& TRIS) : offset(offset), tris(TRIS)     
-    //{ 
-    //    meshes.push_back(shared_from_this());
-    //    
-    //    for (auto tr : this->tris)
-    //    {
-    //        for (int i = 0; i < 3; i++)
-    //        {
-    //            tr.p[i] = tr.p[i] + offset;
-    //        }
-    //    }
-
-    //    for (auto& t : tris)
-    //    {
-    //        t.owner = shared_from_this();;     // Задавание каждому треугольнику владельца "mesh"
-    //    }
-    //}
     void Add_offset()
     {
-        for (int i = 0; i < this->tris.size(); i++)  // *Scale -> +OffSet
+        for (auto& tri : tris)  // *Scale -> +OffSet
         {
-            for (int j = 0; j < 3; j++)
+            for (int i = 0; i < 3; i++)
             {
-                this->tris[i].p[j] = this->tris[i].p[j] * scale;
-                this->tris[i].p[j] = this->tris[i].p[j] + offset;
+                tri.p[i] = tri.p[i] * scale;
+                tri.p[i] = tri.p[i] + offset;
             }
+
+            tri.owner = shared_from_this();     // Задавание каждому треугольнику владельца "cube"
         }
-        for (auto& t : tris)
-        {
-            t.owner = shared_from_this();;     // Задавание каждому треугольнику владельца "mesh"
-        }
-    }
-
-
-
-    void define_as_line()
-    {
-        this->tris = {
-            triangle{ vec3(0.0f, 0.0f, 0.0f),    vec3(0.0f, 0.0f, 0.0f),    vec3(1.0f, 0.0f, 0.0f) }
-        };
-        std::cout << "line" << std::endl;
     }
 
     void define_as_cube()
     {
-        this->tris = {  //  Standart
+        tris = {  //  Standart
 
             // SOUTH
             triangle{ vec3(0.0f, 0.0f, 0.0f),    vec3(0.0f, 1.0f, 0.0f),    vec3(1.0f, 1.0f, 0.0f) },
@@ -170,11 +138,54 @@ public:
             triangle(vec3(1.0f, 0.0f, 1.0f),    vec3(0.0f, 0.0f, 1.0f),    vec3(0.0f, 0.0f, 0.0f)),
             triangle(vec3(1.0f, 0.0f, 1.0f),    vec3(0.0f, 0.0f, 0.0f),    vec3(1.0f, 0.0f, 0.0f)),
         };
+
         Add_offset();
     }
 
+    static std::shared_ptr<cube> create(vec3 offset, vec3 scale)
+    {
+        auto ptr = std::shared_ptr<cube>(new cube(offset, scale));
+
+        ptr->define_as_cube();
+
+        meshes.push_back(ptr);
+
+        return ptr;
+    }
+
 private:
-    mesh(vec3 offset, vec3 scale)
+    cube(vec3 offset, vec3 scale)
         : offset(offset), scale(scale) {
+    }
+};
+
+
+class line : public mesh
+{
+public:
+    vec3 A_pos;     // Первая точка
+    vec3 B_pos;     // Вторая точка
+
+    void define_as_line()
+    {
+        this->tris = {
+            triangle{A_pos, A_pos, B_pos}
+        };
+    }
+
+    static std::shared_ptr<line> create(vec3 A_pos, vec3 B_pos)
+    {
+        auto ptr = std::shared_ptr<line>(new line(A_pos, B_pos));
+
+        ptr->define_as_line();
+
+        meshes.push_back(ptr);
+
+        return ptr;
+    }
+
+private:
+    line(vec3 A_pos, vec3 B_pos)
+        : A_pos(A_pos), B_pos(B_pos) {
     }
 };

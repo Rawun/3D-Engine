@@ -143,20 +143,18 @@ void CreateObject(short create_obj_num)
         {
         case 1:
         {
-            auto m = mesh::create(
+            auto m = line::create(
                 vec3(x_pos, y_pos, z_pos),
                 vec3(x_scale, y_scale, z_scale)
             );
-            m->define_as_line();
             break;
         }
         case 3:
         {
-            auto m = mesh::create(
+            auto m = cube::create(
                 vec3(x_pos, y_pos, z_pos),
                 vec3(x_scale, y_scale, z_scale)
             );
-            m->define_as_cube();
             break;
         }
         default:
