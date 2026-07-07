@@ -94,11 +94,16 @@ public:
     static std::vector<std::shared_ptr<mesh>> meshes;
 };
 
-class cube : public mesh    //спрятать всё не нужное под private, protected/решить проблему с look_dir >= +-1
+class cube : public mesh    //спрятать всё не нужное под private, protected (для UI)/решить проблему с look_dir >= +-1
 {
-public:
+private:
     vec3 offset;    // Смещение относительно всех треугольников
     vec3 scale{1, 1, 1};     // Размер фигуры
+
+
+    cube(vec3 offset, vec3 scale)
+        : offset(offset), scale(scale) {
+    }
 
 
     void Add_offset()
@@ -142,6 +147,7 @@ public:
         Add_offset();
     }
 
+public:
     static std::shared_ptr<cube> create(vec3 offset, vec3 scale)
     {
         auto ptr = std::shared_ptr<cube>(new cube(offset, scale));
@@ -152,19 +158,20 @@ public:
 
         return ptr;
     }
-
-private:
-    cube(vec3 offset, vec3 scale)
-        : offset(offset), scale(scale) {
-    }
 };
 
 
 class line : public mesh
 {
-public:
+private:
     vec3 A_pos;     // Первая точка
     vec3 B_pos;     // Вторая точка
+
+
+    line(vec3 A_pos, vec3 B_pos)
+        : A_pos(A_pos), B_pos(B_pos) {
+    }
+
 
     void define_as_line()
     {
@@ -173,6 +180,7 @@ public:
         };
     }
 
+public:
     static std::shared_ptr<line> create(vec3 A_pos, vec3 B_pos)
     {
         auto ptr = std::shared_ptr<line>(new line(A_pos, B_pos));
@@ -182,10 +190,5 @@ public:
         meshes.push_back(ptr);
 
         return ptr;
-    }
-
-private:
-    line(vec3 A_pos, vec3 B_pos)
-        : A_pos(A_pos), B_pos(B_pos) {
     }
 };

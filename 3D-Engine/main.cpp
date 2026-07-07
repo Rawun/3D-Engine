@@ -113,8 +113,6 @@ void CreateObject(short create_obj_num)
     shared_ptr<TextClass> y_scale_ptr = page_input_data[create_obj_num][4];;
     shared_ptr<TextClass> z_scale_ptr = page_input_data[create_obj_num][5];;
 
-    for (auto c : page_input_data[create_obj_num]) cout << c->drawing_text.toAnsiString()<<endl;
-
     if (String_is_Int(x_pos_ptr->drawing_text) &&
         String_is_Int(y_pos_ptr->drawing_text) &&
         String_is_Int(z_pos_ptr->drawing_text) &&
